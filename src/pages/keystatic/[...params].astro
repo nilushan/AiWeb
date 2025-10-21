@@ -4,7 +4,15 @@ export const prerender = false;
 import { makeHandler } from '@keystatic/astro/api';
 import keystaticConfig from '../../../keystatic.config';
 
+// Keystatic requires server-side rendering
+// This page is only available in development/hybrid mode
 export const ALL = makeHandler({
   config: keystaticConfig,
 });
+
+// For static builds, provide a static path export to avoid build errors
+export function getStaticPaths() {
+  // Return empty array - this route won't be generated in static builds
+  return [];
+}
 ---

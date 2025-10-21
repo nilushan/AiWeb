@@ -153,6 +153,20 @@ daisyui: {
 
 ## 🚀 Deployment
 
+### GitHub Pages (Recommended)
+
+This repository includes a GitHub Actions workflow for automatic deployment to GitHub Pages.
+
+**Quick Setup:**
+
+1. Go to your repository **Settings** > **Pages**
+2. Set **Source** to **GitHub Actions**
+3. Push to `main` branch - deployment happens automatically!
+
+Your site will be live at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME`
+
+📖 **[Full Deployment Guide](DEPLOYMENT.md)** - Detailed instructions for GitHub Pages and other platforms
+
 ### Build for Production
 
 ```bash
@@ -161,24 +175,32 @@ npm run build
 
 The built site will be in the `dist/` directory.
 
-### Deploy to Vercel
+### Other Deployment Options
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-
-### Deploy to Netlify
-
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start)
 
-### Other Platforms
-
-AiWeb can be deployed to any platform that supports Node.js:
-
+**Supported Platforms:**
+- **GitHub Pages** ⭐ (Automated with GitHub Actions)
 - Vercel
 - Netlify
 - Cloudflare Pages
-- AWS
+- AWS Amplify
 - DigitalOcean
 - Railway
+
+### Content Management
+
+**Development** (with Keystatic CMS):
+```bash
+npm run dev
+# Access CMS at http://localhost:4321/keystatic
+```
+
+**Production** (GitHub Pages):
+- Content is managed locally via Keystatic
+- Committed to Git
+- Automatically deployed when pushed
 
 ## 📖 Documentation
 
