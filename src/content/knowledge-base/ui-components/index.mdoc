@@ -1,0 +1,219 @@
+---
+title: ui-components
+description: Learn how to use our reusable UI components to build beautiful interfaces quickly and efficiently.
+category: guides
+order: 1
+icon: 🎨
+image: /images/kb/ui-components.jpg
+lastUpdated: 2024-10-21
+featured: true
+---
+
+# UI Components Guide
+
+AiWeb comes with a comprehensive set of reusable UI components built with DaisyUI. This guide covers all available components and how to use them.
+
+## Button Component
+
+The Button component provides a flexible way to create interactive buttons with various styles.
+
+### Basic Usage
+
+```astro
+---
+import Button from '@/components/ui/Button.astro';
+---
+
+<Button variant="primary">Click me</Button>
+<Button variant="secondary" outline>Outlined</Button>
+<Button variant="accent" size="lg">Large Button</Button>
+```
+
+### Props
+
+- `variant`: primary, secondary, accent, ghost, link, info, success, warning, error
+- `size`: xs, sm, md, lg
+- `outline`: boolean
+- `wide`: boolean
+- `block`: boolean
+- `glass`: boolean
+- `href`: string (makes it a link)
+
+## Card Component
+
+Cards are perfect for displaying content in a contained format.
+
+### Basic Usage
+
+```astro
+---
+import Card from '@/components/ui/Card.astro';
+---
+
+<Card
+  title="Card Title"
+  description="Card description goes here"
+  image="/images/card.jpg"
+  href="/link"
+/>
+```
+
+### Props
+
+- `title`: string
+- `description`: string
+- `image`: string
+- `imageAlt`: string
+- `href`: string
+- `bordered`: boolean
+- `compact`: boolean
+- `side`: boolean (side-by-side layout)
+- `glass`: boolean
+- `hover`: boolean (hover effect)
+
+## Hero Component
+
+Create stunning hero sections with ease.
+
+### Basic Usage
+
+```astro
+---
+import Hero from '@/components/ui/Hero.astro';
+import Button from '@/components/ui/Button.astro';
+---
+
+<Hero
+  title="Welcome to AiWeb"
+  subtitle="Build amazing websites"
+>
+  <Button variant="primary" size="lg">Get Started</Button>
+</Hero>
+```
+
+### Props
+
+- `title`: string (required)
+- `subtitle`: string
+- `image`: string (background image)
+- `overlay`: boolean
+- `gradient`: boolean
+- `centered`: boolean
+
+## Feature Component
+
+Showcase features with icons and descriptions.
+
+### Basic Usage
+
+```astro
+---
+import Feature from '@/components/ui/Feature.astro';
+---
+
+<Feature
+  icon="⚡"
+  title="Lightning Fast"
+  description="Blazing fast performance"
+  iconColor="text-warning"
+/>
+```
+
+### Props
+
+- `icon`: string
+- `title`: string (required)
+- `description`: string (required)
+- `href`: string
+- `iconColor`: string (Tailwind class)
+
+## DaisyUI Components
+
+In addition to our custom components, you have access to all DaisyUI components:
+
+### Alerts
+
+```html
+<div class="alert alert-success">
+  <svg>...</svg>
+  <span>Your purchase has been confirmed!</span>
+</div>
+```
+
+### Badges
+
+```html
+<span class="badge badge-primary">Primary</span>
+<span class="badge badge-secondary">Secondary</span>
+<span class="badge badge-accent">Accent</span>
+```
+
+### Modal
+
+```html
+<button class="btn" onclick="my_modal.showModal()">Open Modal</button>
+<dialog id="my_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Hello!</h3>
+    <p class="py-4">Modal content here</p>
+  </div>
+</dialog>
+```
+
+### Loading Spinners
+
+```html
+<span class="loading loading-spinner loading-lg"></span>
+<span class="loading loading-dots loading-lg"></span>
+<span class="loading loading-ring loading-lg"></span>
+```
+
+## Styling Tips
+
+### Custom Classes
+
+All components accept a `class` prop for custom styling:
+
+```astro
+<Button class="my-4 mx-auto" variant="primary">
+  Custom Styled Button
+</Button>
+```
+
+### Responsive Design
+
+Use Tailwind's responsive modifiers:
+
+```html
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- Cards go here -->
+</div>
+```
+
+### Animations
+
+Apply animations with utility classes:
+
+```html
+<div class="card card-hover animate-pulse">
+  <!-- Animated card -->
+</div>
+```
+
+## Best Practices
+
+1. **Reuse components**: Don't recreate what already exists
+2. **Consistent spacing**: Use the spacing scale (4, 8, 12, 16, etc.)
+3. **Accessibility**: Always include proper ARIA labels
+4. **Mobile first**: Design for mobile, then enhance for larger screens
+5. **Theme aware**: Test your components in different themes
+
+## Examples
+
+Check out our [homepage](/) to see these components in action!
+
+## Next Steps
+
+- [Learn about SEO optimization](/knowledge-base/seo-best-practices)
+- [Deploy your site](/knowledge-base/deployment)
+- [Customize your theme](/knowledge-base/theming)

@@ -1,0 +1,59 @@
+---
+export interface Props {
+  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'link' | 'info' | 'success' | 'warning' | 'error';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  outline?: boolean;
+  wide?: boolean;
+  block?: boolean;
+  glass?: boolean;
+  circle?: boolean;
+  square?: boolean;
+  href?: string;
+  target?: string;
+  class?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  outline = false,
+  wide = false,
+  block = false,
+  glass = false,
+  circle = false,
+  square = false,
+  href,
+  target,
+  class: className = '',
+  type = 'button',
+} = Astro.props;
+
+const baseClasses = 'btn btn-animate';
+const variantClass = outline ? `btn-outline btn-${variant}` : `btn-${variant}`;
+const sizeClass = `btn-${size}`;
+const shapeClass = circle ? 'btn-circle' : square ? 'btn-square' : '';
+const widthClass = wide ? 'btn-wide' : block ? 'btn-block' : '';
+const glassClass = glass ? 'glass' : '';
+
+const classes = [
+  baseClasses,
+  variantClass,
+  sizeClass,
+  shapeClass,
+  widthClass,
+  glassClass,
+  className
+].filter(Boolean).join(' ');
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  href={href}
+  target={target}
+  type={!href ? type : undefined}
+  class={classes}
+>
+  <slot />
+</Tag>

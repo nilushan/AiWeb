@@ -1,0 +1,112 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Card from '@/components/ui/Card.astro';
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../../keystatic.config';
+
+const reader = createReader(process.cwd(), keystaticConfig);
+const posts = await reader.collections.posts.all();
+
+// Sort posts by date (newest first) and filter out drafts
+const sortedPosts = posts
+  .filter(post => !post.entry.draft)
+  .sort((a, b) => {
+    const dateA = new Date(a.entry.publishDate || Date.now());
+    const dateB = new Date(b.entry.publishDate || Date.now());
+    return dateB.getTime() - dateA.getTime();
+  });
+
+const featuredPosts = sortedPosts.filter(post => post.entry.featured).slice(0, 3);
+const regularPosts = sortedPosts.filter(post => !post.entry.featured);
+---
+
+<BaseLayout
+  title="Blog"
+  description="Read our latest articles, tutorials, and insights about web development, design, and technology."
+>
+  <!-- Hero Section -->
+  <section class="hero hero-gradient py-20">
+    <div class="hero-content text-center">
+      <div class="max-w-3xl">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Blog</h1>
+        <p class="text-xl md:text-2xl opacity-90">
+          Insights, tutorials, and updates from our team
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Posts -->
+  {featuredPosts.length > 0 && (
+    <section class="section-padding bg-base-200">
+      <div class="container-custom">
+        <h2 class="text-3xl font-bold mb-8">Featured Posts</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {featuredPosts.map((post) => (
+            <Card
+              title={post.entry.title}
+              description={post.entry.description}
+              image={post.entry.image || '/images/placeholder.jpg'}
+              imageAlt={post.entry.title}
+              href={`/blog/${post.slug}`}
+              hover={true}
+            >
+              <div class="flex flex-wrap gap-2 mt-4">
+                {post.entry.tags?.map((tag) => (
+                  <span class="badge badge-primary">{tag}</span>
+                ))}
+              </div>
+              <div class="text-sm text-base-content/60 mt-2">
+                {post.entry.publishDate && new Date(post.entry.publishDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+                {post.entry.author && ` • ${post.entry.author}`}
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- All Posts -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <h2 class="text-3xl font-bold mb-8">All Posts</h2>
+      {regularPosts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {regularPosts.map((post) => (
+            <Card
+              title={post.entry.title}
+              description={post.entry.description}
+              image={post.entry.image || '/images/placeholder.jpg'}
+              imageAlt={post.entry.title}
+              href={`/blog/${post.slug}`}
+              hover={true}
+            >
+              <div class="flex flex-wrap gap-2 mt-4">
+                {post.entry.tags?.map((tag) => (
+                  <span class="badge badge-outline">{tag}</span>
+                ))}
+              </div>
+              <div class="text-sm text-base-content/60 mt-2">
+                {post.entry.publishDate && new Date(post.entry.publishDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+                {post.entry.author && ` • ${post.entry.author}`}
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-xl text-base-content/70">No posts available yet. Check back soon!</p>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,118 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../../keystatic.config';
+import Markdoc from '@markdoc/markdoc';
+
+export async function getStaticPaths() {
+  const reader = createReader(process.cwd(), keystaticConfig);
+  const posts = await reader.collections.posts.all();
+
+  return posts
+    .filter(post => !post.entry.draft)
+    .map((post) => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { title, description, publishDate, author, image, tags } = post.entry;
+const content = await post.entry.content();
+const renderedContent = Markdoc.renderers.html(Markdoc.transform(content.node));
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={image || undefined}
+  article={true}
+  publishDate={publishDate || undefined}
+  author={author || undefined}
+  tags={tags ? [...tags] : undefined}
+>
+  <article class="section-padding">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <!-- Article Header -->
+      <header class="mb-12">
+        <div class="breadcrumbs text-sm mb-6">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li>{title}</li>
+          </ul>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          {title}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-4 text-base-content/70 mb-6">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+            </svg>
+            <span>{author}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+            </svg>
+            <time datetime={publishDate || undefined}>
+              {publishDate && new Date(publishDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+          </div>
+        </div>
+
+        {tags && tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-8">
+            {tags.map((tag) => (
+              <span class="badge badge-primary badge-lg">{tag}</span>
+            ))}
+          </div>
+        )}
+
+        {image && (
+          <div class="rounded-2xl overflow-hidden shadow-2xl mb-8">
+            <img
+              src={image}
+              alt={title}
+              class="w-full h-auto"
+              loading="eager"
+            />
+          </div>
+        )}
+
+        <p class="text-xl leading-relaxed text-base-content/80">
+          {description}
+        </p>
+      </header>
+
+      <!-- Article Content -->
+      <div class="prose prose-lg max-w-none" set:html={renderedContent}>
+      </div>
+
+      <!-- Article Footer -->
+      <footer class="mt-16 pt-8 border-t border-base-300">
+        <div class="flex justify-between items-center">
+          <a href="/blog" class="btn btn-outline btn-primary">
+            ← Back to Blog
+          </a>
+          <div class="flex gap-2">
+            <span class="text-base-content/70">Share:</span>
+            <a href={`https://twitter.com/intent/tweet?text=${title}&url=${Astro.url}`} target="_blank" rel="noopener noreferrer" class="link link-primary">
+              Twitter
+            </a>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${Astro.url}`} target="_blank" rel="noopener noreferrer" class="link link-primary">
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>

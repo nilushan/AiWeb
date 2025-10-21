@@ -1,0 +1,280 @@
+---
+title: seo-best-practices
+description: Learn how to optimize your AiWeb site for search engines and improve your visibility in search results.
+category: guides
+order: 2
+icon: 🔍
+image: /images/kb/seo.jpg
+lastUpdated: 2024-10-21
+featured: true
+---
+
+# SEO Best Practices
+
+AiWeb is built with SEO in mind. This guide will help you optimize your site for search engines and improve your rankings.
+
+## Built-in SEO Features
+
+AiWeb includes several SEO optimizations out of the box:
+
+### 1. SEO Component
+
+Every page uses the SEO component which automatically generates:
+
+- Meta tags (title, description)
+- Open Graph tags for social sharing
+- Twitter Card tags
+- Canonical URLs
+- Structured data
+
+### 2. Sitemap Generation
+
+The sitemap is automatically generated and includes all your pages:
+
+- Located at `/sitemap-index.xml`
+- Updated automatically when you build
+- Includes all static and dynamic routes
+
+### 3. Image Optimization
+
+All images are automatically optimized:
+
+- WebP format conversion
+- Responsive image sizes
+- Lazy loading by default
+- Proper alt text support
+
+## Optimizing Your Content
+
+### Page Titles
+
+Keep titles concise and descriptive (50-60 characters):
+
+```astro
+<BaseLayout title="Quick Start Guide - AiWeb">
+  <!-- content -->
+</BaseLayout>
+```
+
+### Meta Descriptions
+
+Write compelling descriptions (150-160 characters):
+
+```astro
+<BaseLayout
+  title="SEO Guide"
+  description="Learn how to optimize your AiWeb site for search engines with our comprehensive SEO guide."
+>
+  <!-- content -->
+</BaseLayout>
+```
+
+### Heading Structure
+
+Use proper heading hierarchy:
+
+```markdown
+# H1 - Page Title (only one per page)
+## H2 - Main Sections
+### H3 - Subsections
+#### H4 - Details
+```
+
+### Internal Linking
+
+Link to related content to improve navigation:
+
+```markdown
+Check out our [Quick Start Guide](/knowledge-base/quick-start-guide)
+for more information.
+```
+
+## Technical SEO
+
+### Performance
+
+Astro delivers excellent performance by default:
+
+- **Zero JS by default**: Faster page loads
+- **Partial hydration**: Load JS only when needed
+- **Optimized assets**: Minified CSS and JS
+- **Image optimization**: WebP and responsive images
+
+### Mobile Optimization
+
+Ensure your site works well on mobile:
+
+```html
+<!-- Responsive grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- content -->
+</div>
+```
+
+### Schema Markup
+
+Add structured data for better search results:
+
+```astro
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Your Article Title",
+  "description": "Your description",
+  "author": {
+    "@type": "Person",
+    "name": "Author Name"
+  }
+}
+</script>
+```
+
+### Canonical URLs
+
+Prevent duplicate content issues:
+
+```astro
+<BaseLayout
+  title="My Page"
+  canonicalURL="https://example.com/my-page"
+>
+```
+
+## Content Strategy
+
+### Quality Content
+
+Focus on creating valuable content:
+
+1. **Original content**: Don't duplicate from other sources
+2. **Comprehensive**: Cover topics thoroughly
+3. **Up to date**: Keep content fresh and relevant
+4. **Well-structured**: Use headings, lists, and formatting
+
+### Keywords
+
+Use keywords naturally:
+
+- Include in titles and headings
+- Use in first paragraph
+- Include in image alt text
+- Don't keyword stuff
+
+### Content Freshness
+
+Update content regularly:
+
+- Add new articles to blog
+- Update existing content
+- Add publish and update dates
+
+## Images and Media
+
+### Image Optimization
+
+```astro
+<img
+  src="/images/hero.jpg"
+  alt="Descriptive alt text"
+  loading="lazy"
+  class="w-full h-auto rounded-lg"
+/>
+```
+
+### Alt Text
+
+Write descriptive alt text:
+
+- Describe what's in the image
+- Be concise but descriptive
+- Include keywords naturally
+- Don't start with "Image of..."
+
+### File Names
+
+Use descriptive file names:
+
+- `hero-image.jpg` ✅
+- `IMG_1234.jpg` ❌
+
+## Social Media Optimization
+
+### Open Graph Tags
+
+The SEO component automatically generates OG tags:
+
+```astro
+<BaseLayout
+  title="My Article"
+  description="Article description"
+  image="/images/og-image.jpg"
+>
+```
+
+This creates:
+- `og:title`
+- `og:description`
+- `og:image`
+- `og:url`
+- `og:type`
+
+### Twitter Cards
+
+Twitter Card tags are also generated automatically for better Twitter sharing.
+
+## Monitoring and Analytics
+
+### Google Search Console
+
+1. Verify your site
+2. Submit your sitemap
+3. Monitor for errors
+4. Track search performance
+
+### Analytics
+
+Add analytics to track:
+
+- Page views
+- User behavior
+- Traffic sources
+- Conversions
+
+## Common SEO Mistakes to Avoid
+
+1. ❌ Duplicate content
+2. ❌ Missing meta descriptions
+3. ❌ Broken links
+4. ❌ Slow page speed
+5. ❌ Missing alt text
+6. ❌ Poor mobile experience
+7. ❌ Thin content
+8. ❌ Keyword stuffing
+
+## SEO Checklist
+
+Before publishing:
+
+- [ ] Title is descriptive and unique
+- [ ] Meta description is compelling
+- [ ] Images have alt text
+- [ ] Internal links are working
+- [ ] Content is well-structured
+- [ ] Mobile responsive
+- [ ] Fast loading speed
+- [ ] HTTPS enabled
+- [ ] Sitemap submitted
+- [ ] Analytics configured
+
+## Next Steps
+
+- [Learn about deployment](/knowledge-base/deployment)
+- [Optimize images](/knowledge-base/image-optimization)
+- [Read our FAQ](/knowledge-base?category=faq)
+
+## Resources
+
+- [Google Search Console](https://search.google.com/search-console)
+- [PageSpeed Insights](https://pagespeed.web.dev)
+- [Schema.org](https://schema.org)

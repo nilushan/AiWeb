@@ -1,0 +1,112 @@
+---
+title: quick-start-guide
+description: Get up and running with AiWeb in just 5 minutes. This guide covers everything you need to start building.
+category: getting-started
+order: 1
+icon: 🚀
+image: /images/kb/quick-start.jpg
+lastUpdated: 2024-10-21
+featured: true
+---
+
+# Quick Start Guide
+
+Welcome to AiWeb! This guide will help you get started in just a few minutes.
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- **Node.js** 18.0 or higher
+- **npm** or **yarn** package manager
+- A code editor (we recommend VS Code)
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/aiweb.git
+cd aiweb
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the Development Server
+
+```bash
+npm run dev
+```
+
+Your site will be available at `http://localhost:4321`!
+
+## Project Structure
+
+Here's what you'll find in the project:
+
+```
+aiweb/
+├── src/
+│   ├── components/     # Reusable components
+│   ├── layouts/        # Page layouts
+│   ├── pages/          # Your pages
+│   ├── content/        # Content collections
+│   └── styles/         # Global styles
+├── public/             # Static assets
+└── keystatic.config.tsx # CMS configuration
+```
+
+## Creating Your First Page
+
+Pages are created in the `src/pages/` directory:
+
+1. Create a new file: `src/pages/my-page.astro`
+2. Add your content:
+
+```astro
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="My Page">
+  <div class="container-custom section-padding">
+    <h1 class="text-4xl font-bold">Hello World!</h1>
+  </div>
+</BaseLayout>
+```
+
+3. Visit `http://localhost:4321/my-page`
+
+## Using the CMS
+
+Access the Keystatic CMS at `/keystatic` to manage your content:
+
+1. Navigate to `http://localhost:4321/keystatic`
+2. Create new blog posts, knowledge base articles, or pages
+3. Your content is saved as Markdown files in the `src/content/` directory
+
+## Customizing Themes
+
+Change the theme by clicking the theme switcher in the header. Themes are persisted in localStorage.
+
+## Next Steps
+
+Now that you're up and running:
+
+- [Explore Components](/knowledge-base/ui-components)
+- [Learn About SEO](/knowledge-base/seo-best-practices)
+- [Deploy Your Site](/knowledge-base/deployment)
+
+## Getting Help
+
+If you run into issues:
+
+- Check our [FAQ](/knowledge-base?category=faq)
+- Read the [guides](/knowledge-base?category=guides)
+- Contact [support](/contact)
+
+Happy building! 🎉

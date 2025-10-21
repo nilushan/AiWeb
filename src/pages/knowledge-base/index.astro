@@ -1,0 +1,137 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Card from '@/components/ui/Card.astro';
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../../keystatic.config';
+
+const reader = createReader(process.cwd(), keystaticConfig);
+const articles = await reader.collections.knowledgeBase.all();
+
+// Sort by order and group by category
+const sortedArticles = articles.sort((a, b) => (a.entry.order || 0) - (b.entry.order || 0));
+
+const categories = {
+  'getting-started': 'Getting Started',
+  'guides': 'Guides',
+  'tutorials': 'Tutorials',
+  'api-reference': 'API Reference',
+  'faq': 'FAQ'
+};
+
+const articlesByCategory = Object.keys(categories).reduce((acc, key) => {
+  acc[key] = sortedArticles.filter(article => article.entry.category === key);
+  return acc;
+}, {} as Record<string, typeof sortedArticles>);
+
+const featuredArticles = sortedArticles.filter(article => article.entry.featured).slice(0, 6);
+---
+
+<BaseLayout
+  title="Knowledge Base"
+  description="Comprehensive documentation, guides, and tutorials to help you get the most out of our platform."
+>
+  <!-- Hero Section -->
+  <section class="hero hero-gradient py-20">
+    <div class="hero-content text-center">
+      <div class="max-w-3xl">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Knowledge Base</h1>
+        <p class="text-xl md:text-2xl opacity-90 mb-8">
+          Everything you need to know about our platform
+        </p>
+        <div class="form-control max-w-md mx-auto">
+          <div class="input-group">
+            <input type="text" placeholder="Search documentation..." class="input input-bordered w-full" />
+            <button class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Articles -->
+  {featuredArticles.length > 0 && (
+    <section class="section-padding bg-base-200">
+      <div class="container-custom">
+        <h2 class="text-3xl font-bold mb-8">Featured Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredArticles.map((article) => (
+            <Card
+              title={article.entry.title}
+              description={article.entry.description}
+              href={`/knowledge-base/${article.slug}`}
+              hover={true}
+            >
+              <div class="flex items-center gap-2 mt-4">
+                <span class="text-2xl">{article.entry.icon}</span>
+                <span class="badge badge-outline">{categories[article.entry.category as keyof typeof categories]}</span>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Categories -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <h2 class="text-3xl font-bold mb-12">Browse by Category</h2>
+      <div class="space-y-12">
+        {Object.entries(categories).map(([key, label]) => {
+          const categoryArticles = articlesByCategory[key];
+          if (!categoryArticles || categoryArticles.length === 0) return null;
+
+          return (
+            <div>
+              <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                {categoryArticles[0]?.entry.icon || '📄'}
+                {label}
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categoryArticles.map((article) => (
+                  <a
+                    href={`/knowledge-base/${article.slug}`}
+                    class="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow border border-base-300 card-hover"
+                  >
+                    <div class="card-body">
+                      <h4 class="card-title text-lg">{article.entry.title}</h4>
+                      <p class="text-sm text-base-content/70 line-clamp-2">
+                        {article.entry.description}
+                      </p>
+                      <div class="text-xs text-base-content/60 mt-2">
+                        {article.entry.lastUpdated && `Updated: ${new Date(article.entry.lastUpdated).toLocaleDateString()}`}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Help Section -->
+  <section class="section-padding bg-base-200">
+    <div class="container-custom">
+      <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
+        <div class="card-body items-center text-center p-12">
+          <h2 class="card-title text-3xl md:text-4xl font-bold mb-4">
+            Can't find what you're looking for?
+          </h2>
+          <p class="text-lg mb-6 max-w-2xl opacity-90">
+            Our support team is here to help you. Get in touch and we'll get back to you as soon as possible.
+          </p>
+          <a href="/contact" class="btn btn-accent btn-lg">
+            Contact Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

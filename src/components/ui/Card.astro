@@ -1,0 +1,67 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  href?: string;
+  bordered?: boolean;
+  compact?: boolean;
+  side?: boolean;
+  glass?: boolean;
+  hover?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  imageAlt = '',
+  href,
+  bordered = false,
+  compact = false,
+  side = false,
+  glass = false,
+  hover = true,
+  class: className = '',
+} = Astro.props;
+
+const cardClasses = [
+  'card',
+  'bg-base-100',
+  bordered ? 'card-bordered' : 'shadow-xl',
+  compact ? 'card-compact' : '',
+  side ? 'card-side' : '',
+  glass ? 'glass-effect' : '',
+  hover ? 'card-hover' : '',
+  className,
+].filter(Boolean).join(' ');
+
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag href={href} class={cardClasses}>
+  {image && (
+    <figure class={side ? 'max-w-xs' : ''}>
+      <img
+        src={image}
+        alt={imageAlt}
+        class="w-full h-full object-cover"
+        loading="lazy"
+      />
+    </figure>
+  )}
+  <div class="card-body">
+    {title && <h2 class="card-title">{title}</h2>}
+    {description && <p>{description}</p>}
+    <slot />
+    <slot name="actions">
+      {href && (
+        <div class="card-actions justify-end">
+          <button class="btn btn-primary btn-sm">Learn More</button>
+        </div>
+      )}
+    </slot>
+  </div>
+</Tag>

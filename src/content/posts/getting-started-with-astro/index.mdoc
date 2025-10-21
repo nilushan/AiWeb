@@ -1,0 +1,70 @@
+---
+title: getting-started-with-astro
+description: Learn how to build blazing fast websites with Astro, the modern web framework that delivers zero JavaScript by default.
+publishDate: 2024-10-21
+author: Admin
+image: /images/posts/astro-getting-started.jpg
+tags:
+  - Astro
+  - Web Development
+  - Tutorial
+featured: true
+draft: false
+---
+
+# Getting Started with Astro
+
+Astro is a modern web framework that helps you build faster websites with less client-side JavaScript. In this guide, we'll explore the basics of Astro and why it's becoming the go-to choice for developers.
+
+## Why Choose Astro?
+
+Astro brings a fresh approach to web development with several key advantages:
+
+- **Zero JavaScript by Default**: Astro ships zero JavaScript to the browser by default, resulting in faster page loads
+- **Component Islands**: Load interactive components only when needed
+- **Framework Agnostic**: Use React, Vue, Svelte, or any other framework you prefer
+- **Built-in Optimizations**: Automatic image optimization, CSS bundling, and more
+
+## Your First Astro Project
+
+Getting started with Astro is simple. Here's how to create your first project:
+
+```bash
+npm create astro@latest
+cd your-project
+npm run dev
+```
+
+## Project Structure
+
+An Astro project has a clean and intuitive structure:
+
+- `src/pages/` - Your website pages
+- `src/layouts/` - Reusable layouts
+- `src/components/` - Astro and framework components
+- `public/` - Static assets
+
+## Creating Your First Page
+
+Pages in Astro are just `.astro` files in the `src/pages/` directory:
+
+```astro
+---
+const title = "My First Page";
+---
+
+<html>
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
+    <h1>Welcome to Astro!</h1>
+  </body>
+</html>
+```
+
+## Conclusion
+
+Astro provides a powerful yet simple way to build fast websites. With its component islands architecture and framework-agnostic approach, you can build amazing experiences while keeping your sites blazing fast.
+
+Ready to dive deeper? Check out our [Knowledge Base](/knowledge-base) for more tutorials and guides!
