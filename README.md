@@ -161,9 +161,15 @@ This repository includes a GitHub Actions workflow for automatic deployment to G
 
 1. Go to your repository **Settings** > **Pages**
 2. Set **Source** to **GitHub Actions**
-3. Push to `main` branch - deployment happens automatically!
+3. Push to `main` branch or merge a PR - deployment happens automatically!
 
 Your site will be live at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME`
+
+**Workflow:**
+- ✅ **All Branches** - Build & validate on every push
+- ✅ **Pull Requests** - Build & validate (no deployment)
+- ✅ **Push to Main** - Build, validate & deploy automatically
+- ✅ **Manual Trigger** - Deploy from any branch
 
 📖 **[Full Deployment Guide](DEPLOYMENT.md)** - Detailed instructions for GitHub Pages and other platforms
 

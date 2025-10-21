@@ -1,12 +1,15 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Runs on pushes to main/master branch or any claude/* branch
+  # Runs on all pushes to validate builds (deploys only from main/master)
   push:
+    branches:
+      - '**'
+  # Runs on pull requests to main/master (build & test only, no deployment)
+  pull_request:
     branches:
       - main
       - master
-      - 'claude/**'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -33,6 +36,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug - Show event and ref
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Should deploy: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}"
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -42,6 +51,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
@@ -53,13 +63,20 @@ jobs:
           npm run build
         working-directory: ${{ env.BUILD_PATH }}
         env:
-          # Use the Pages URL from the configure-pages action
-          SITE_URL: ${{ steps.pages.outputs.origin }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Use the Pages URL from the configure-pages action (if available)
+          SITE_URL: ${{ steps.pages.outputs.origin || 'https://nilushan.github.io' }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path || '/AiWeb' }}
           NODE_ENV: production
           CI: true
 
-      - name: Upload artifact
+      - name: Check dist folder
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        run: |
+          echo "Checking dist folder..."
+          ls -la ${{ env.BUILD_PATH }}/dist || echo "Dist folder not found!"
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
@@ -68,10 +85,20 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    # Only deploy on push to main/master or manual dispatch, not on PRs or feature branches
+    if: |
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) ||
+      github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Debug - Deploy job info
+        run: |
+          echo "Deploy job started!"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
