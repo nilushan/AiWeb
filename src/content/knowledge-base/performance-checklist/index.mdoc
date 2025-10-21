@@ -1,0 +1,409 @@
+---
+title: performance-optimization-checklist
+description: Complete performance optimization checklist for AiWeb. Ensure your site loads fast and ranks well.
+category: guides
+order: 5
+icon: ⚡
+image: /images/kb/performance.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Performance Optimization Checklist
+
+Use this comprehensive checklist to optimize your AiWeb site for maximum performance. Follow these practices to achieve perfect Lighthouse scores.
+
+## Pre-Launch Checklist
+
+### Images
+
+- ✅ All images optimized (WebP format)
+- ✅ Images have explicit width/height
+- ✅ Above-fold images use `loading="eager"`
+- ✅ Below-fold images use `loading="lazy"`
+- ✅ Hero images use `fetchpriority="high"`
+- ✅ Image file sizes under 200KB each
+- ✅ Responsive images for different screen sizes
+- ✅ All images have descriptive alt text
+
+### JavaScript
+
+- ✅ React components only where needed
+- ✅ Correct hydration directive used (`client:load`, `client:visible`, `client:idle`)
+- ✅ Heavy components lazy loaded
+- ✅ No unnecessary third-party scripts
+- ✅ Analytics script deferred or async
+- ✅ No inline scripts blocking render
+- ✅ Bundle size under 100KB (gzipped)
+
+### CSS
+
+- ✅ Tailwind purging enabled
+- ✅ Only necessary DaisyUI themes included
+- ✅ Critical CSS inlined
+- ✅ Non-critical CSS loaded async
+- ✅ No unused CSS classes
+- ✅ CSS file size under 50KB
+- ✅ No CSS blocking page render
+
+### Fonts
+
+- ✅ Fonts self-hosted (not from Google Fonts CDN)
+- ✅ WOFF2 format used
+- ✅ `font-display: swap` set
+- ✅ Font files preloaded
+- ✅ Only necessary font weights included
+- ✅ Font subsetting applied
+
+### HTML
+
+- ✅ Semantic HTML structure
+- ✅ Proper heading hierarchy (H1 → H2 → H3)
+- ✅ Meta tags optimized
+- ✅ Unnecessary whitespace removed in production
+- ✅ HTML minified
+- ✅ No inline styles (except critical CSS)
+
+### Build Configuration
+
+- ✅ Asset inlining configured
+- ✅ Code splitting enabled
+- ✅ Compression enabled (Gzip/Brotli)
+- ✅ Sourcemaps disabled in production
+- ✅ Build warnings addressed
+- ✅ TypeScript errors resolved
+
+### Caching
+
+- ✅ Cache headers set for static assets
+- ✅ Long cache times for versioned assets
+- ✅ Service worker configured (optional)
+- ✅ CDN configured
+- ✅ Browser caching optimized
+
+### Core Web Vitals
+
+- ✅ LCP (Largest Contentful Paint) < 2.5s
+- ✅ FID (First Input Delay) < 100ms
+- ✅ CLS (Cumulative Layout Shift) < 0.1
+- ✅ FCP (First Contentful Paint) < 1.8s
+- ✅ TTI (Time to Interactive) < 3.8s
+- ✅ TBT (Total Blocking Time) < 200ms
+
+## Quick Wins
+
+### Immediate Impact
+
+1. **Enable Image Optimization**
+```astro
+import { Image } from 'astro:assets';
+
+<Image
+  src={image}
+  width={800}
+  height={600}
+  format="webp"
+  loading="lazy"
+/>
+```
+
+2. **Lazy Load React Components**
+```astro
+<HeavyComponent client:visible />
+```
+
+3. **Limit DaisyUI Themes**
+```javascript
+// tailwind.config.mjs
+daisyui: {
+  themes: ['light', 'dark'], // Only include what you use
+}
+```
+
+4. **Preload Critical Assets**
+```astro
+<link rel="preload" as="font" href="/fonts/inter.woff2" />
+```
+
+5. **Minimize JavaScript**
+- Remove unused dependencies
+- Use lighter alternatives
+- Defer non-critical scripts
+
+## Advanced Optimizations
+
+### Code Splitting
+
+```javascript
+// Dynamic imports
+const HeavyModule = await import('./HeavyModule');
+
+// Route-based splitting (automatic in Astro)
+// Each page gets its own bundle
+```
+
+### Resource Hints
+
+```astro
+<head>
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <!-- DNS prefetch -->
+  <link rel="dns-prefetch" href="https://analytics.com" />
+
+  <!-- Preload critical resources -->
+  <link rel="preload" as="image" href="/hero.jpg" />
+</head>
+```
+
+### Image Optimization
+
+```astro
+---
+import { getImage } from 'astro:assets';
+
+// Generate optimized image at build time
+const optimizedImage = await getImage({
+  src: originalImage,
+  width: 800,
+  height: 600,
+  format: 'webp',
+  quality: 80,
+});
+---
+
+<img src={optimizedImage.src} alt="Optimized" />
+```
+
+### Font Loading Strategy
+
+```css
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-subset.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 400;
+  /* Only include Latin subset */
+  unicode-range: U+0000-00FF;
+}
+```
+
+## Measurement Tools
+
+### Lighthouse
+
+```bash
+# Install Lighthouse CLI
+npm install -g lighthouse
+
+# Run audit
+lighthouse https://yourdomain.com --view
+
+# Or use Chrome DevTools:
+# DevTools → Lighthouse → Generate Report
+```
+
+### WebPageTest
+
+Visit [webpagetest.org](https://www.webpagetest.org/) and test your site:
+- Multiple locations
+- Different devices
+- Various connection speeds
+
+### Chrome DevTools
+
+**Performance Tab**:
+1. Open DevTools (F12)
+2. Go to Performance tab
+3. Click Record
+4. Interact with page
+5. Stop recording
+6. Analyze results
+
+**Coverage Tab**:
+1. DevTools → More Tools → Coverage
+2. Click Record
+3. Load page
+4. See unused CSS/JS
+5. Remove unused code
+
+### Web Vitals
+
+```typescript
+// Install web-vitals
+npm install web-vitals
+
+// Track metrics
+import { onCLS, onFID, onLCP } from 'web-vitals';
+
+onCLS(console.log);
+onFID(console.log);
+onLCP(console.log);
+```
+
+## Performance Budget
+
+Set and enforce performance budgets:
+
+```json
+// performance-budget.json
+{
+  "budget": [
+    {
+      "resourceSizes": [
+        { "resourceType": "script", "budget": 100 },
+        { "resourceType": "stylesheet", "budget": 50 },
+        { "resourceType": "image", "budget": 500 },
+        { "resourceType": "total", "budget": 1000 }
+      ]
+    }
+  ]
+}
+```
+
+## Monitoring
+
+### Continuous Monitoring
+
+**Lighthouse CI** in GitHub Actions:
+
+```yaml
+- uses: treosh/lighthouse-ci-action@v10
+  with:
+    urls: |
+      https://yourdomain.com/
+      https://yourdomain.com/blog
+    budgetPath: ./budget.json
+    uploadArtifacts: true
+```
+
+**Real User Monitoring** (RUM):
+
+```typescript
+// Send metrics to analytics
+import { onLCP, onFID, onCLS } from 'web-vitals';
+
+function sendToAnalytics(metric) {
+  const body = JSON.stringify(metric);
+  fetch('/analytics', { body, method: 'POST', keepalive: true });
+}
+
+onLCP(sendToAnalytics);
+onFID(sendToAnalytics);
+onCLS(sendToAnalytics);
+```
+
+## Common Issues
+
+### Large JavaScript Bundle
+
+**Diagnosis**: Bundle analyzer
+```bash
+npm run build -- --mode analyze
+```
+
+**Solutions**:
+- Remove unused dependencies
+- Lazy load components
+- Use lighter alternatives
+- Enable code splitting
+
+### Slow Image Loading
+
+**Diagnosis**: Network tab shows large images
+
+**Solutions**:
+- Compress images
+- Use WebP format
+- Implement lazy loading
+- Use responsive images
+- Consider using a CDN
+
+### Layout Shift (CLS)
+
+**Diagnosis**: Elements moving during page load
+
+**Solutions**:
+- Set explicit width/height on images
+- Reserve space for dynamic content
+- Avoid inserting content above existing content
+- Use `font-display: swap` carefully
+
+### Long Time to Interactive
+
+**Diagnosis**: Page feels slow/unresponsive
+
+**Solutions**:
+- Reduce JavaScript
+- Defer non-critical scripts
+- Use web workers for heavy tasks
+- Optimize third-party scripts
+
+## Platform-Specific
+
+### GitHub Pages
+
+- ✅ Enable compression in workflow
+- ✅ Set proper cache headers
+- ✅ Use GitHub CDN
+- ✅ Optimize for HTTP/2
+
+### Vercel/Netlify
+
+- ✅ Enable edge caching
+- ✅ Use image optimization service
+- ✅ Configure redirects efficiently
+- ✅ Enable compression
+
+## Mobile Optimization
+
+### Mobile-Specific Checklist
+
+- ✅ Touch targets at least 48x48px
+- ✅ Text legible without zooming (16px+)
+- ✅ Viewport meta tag set
+- ✅ No horizontal scrolling
+- ✅ Fast tap response
+- ✅ Mobile-friendly navigation
+- ✅ Reduced motion respected
+
+### Testing
+
+```html
+<!-- Viewport configuration -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+```
+
+Test on real devices:
+- Various screen sizes
+- Different browsers
+- Slow connections (3G)
+- Different operating systems
+
+## Accessibility Performance
+
+- ✅ Keyboard navigation smooth
+- ✅ Screen reader compatible
+- ✅ Focus indicators visible
+- ✅ Skip links provided
+- ✅ ARIA labels don't affect performance
+
+## Next Steps
+
+After optimization:
+
+1. Run Lighthouse audit
+2. Test on real devices
+3. Monitor with RUM
+4. Set up continuous monitoring
+5. Repeat optimization cycle
+
+## Resources
+
+- [Web.dev Performance](https://web.dev/performance/)
+- [Lighthouse Documentation](https://developers.google.com/web/tools/lighthouse)
+- [Core Web Vitals](https://web.dev/vitals/)
+- [Performance Budget Calculator](https://perf-budget-calculator.firebaseapp.com/)
+
+Keep your site fast! ⚡

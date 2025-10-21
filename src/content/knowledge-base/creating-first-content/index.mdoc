@@ -1,0 +1,501 @@
+---
+title: creating-your-first-content
+description: Step-by-step guide to creating your first blog post and knowledge base article using Keystatic CMS.
+category: getting-started
+order: 3
+icon: ✍️
+image: /images/kb/first-content.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Creating Your First Content
+
+Ready to start publishing? This guide walks you through creating your first blog post and knowledge base article using Keystatic CMS.
+
+## Understanding Content Collections
+
+AiWeb has three content collections:
+
+1. **Blog Posts**: Articles, tutorials, news, updates
+2. **Knowledge Base**: Documentation, guides, FAQ
+3. **Custom Pages**: About, services, landing pages
+
+Each collection has its own fields and organization system.
+
+## Creating a Blog Post
+
+### Using Keystatic CMS (Recommended)
+
+**Step 1**: Start development server
+
+```bash
+npm run dev
+```
+
+**Step 2**: Access Keystatic
+
+Navigate to `http://localhost:4321/keystatic`
+
+**Step 3**: Navigate to Posts
+
+Click "Blog" → "Posts" in the sidebar
+
+**Step 4**: Create New Post
+
+Click "Create Entry" button
+
+**Step 5**: Fill in the fields
+
+```
+Title: My First Blog Post
+Description: Learn how to create amazing blog posts with AiWeb
+Publish Date: 2024-10-27
+Author: Your Name
+Tags: Tutorial, Getting Started
+Featured: Yes (check if you want it on homepage)
+Draft: No (uncheck when ready to publish)
+```
+
+**Step 6**: Add Featured Image
+
+Click "Select Image" and upload an image (recommended: 1200x630px)
+
+**Step 7**: Write Content
+
+Use the rich text editor to write your post:
+
+- Format text (bold, italic, code)
+- Add headings (H2, H3, H4)
+- Insert lists (bullet and numbered)
+- Add links and images
+- Include code blocks
+
+**Step 8**: Save
+
+Click "Save" at the top right
+
+**Step 9**: Preview
+
+Visit `http://localhost:4321/blog` to see your post!
+
+### Using Code Editor (Alternative)
+
+Create file manually:
+
+```bash
+mkdir src/content/posts/my-first-post
+touch src/content/posts/my-first-post/index.mdoc
+```
+
+Edit `index.mdoc`:
+
+```markdown
+---
+title: my-first-post
+description: Learn how to create amazing blog posts with AiWeb
+publishDate: 2024-10-27
+author: Your Name
+image: /images/posts/my-first-post.jpg
+tags:
+  - Tutorial
+  - Getting Started
+featured: true
+draft: false
+---
+
+# My First Blog Post
+
+Welcome to my first blog post! Here's what you'll learn:
+
+## Getting Started
+
+Start with an introduction...
+
+## Main Content
+
+Add your main content here...
+
+### Subsections
+
+Break content into digestible sections.
+
+## Code Examples
+
+\`\`\`javascript
+const greeting = "Hello, World!";
+console.log(greeting);
+\`\`\`
+
+## Conclusion
+
+Wrap up with key takeaways.
+```
+
+## Creating a Knowledge Base Article
+
+### Using Keystatic CMS
+
+**Step 1**: Access Keystatic
+
+Navigate to `http://localhost:4321/keystatic`
+
+**Step 2**: Navigate to Knowledge Base
+
+Click "Knowledge Base" in the sidebar
+
+**Step 3**: Create New Article
+
+Click "Create Entry" button
+
+**Step 4**: Fill in the fields
+
+```
+Title: How to Configure Your Site
+Description: Complete guide to site configuration
+Category: Guides
+Order: 1 (lower numbers appear first)
+Icon: ⚙️ (emoji for visual identification)
+Last Updated: 2024-10-27
+Featured: Yes
+```
+
+**Step 5**: Write Documentation
+
+Structure your documentation clearly:
+
+```markdown
+# How to Configure Your Site
+
+This guide covers site configuration.
+
+## Prerequisites
+
+List what's needed before starting.
+
+## Step-by-Step Instructions
+
+### Step 1: Edit Configuration File
+
+Detailed instructions...
+
+### Step 2: Set Required Fields
+
+More details...
+
+## Best Practices
+
+- Tip 1
+- Tip 2
+- Tip 3
+
+## Troubleshooting
+
+Common issues and solutions.
+
+## Next Steps
+
+Link to related articles.
+```
+
+**Step 6**: Save and Preview
+
+Visit `http://localhost:4321/knowledge-base` to see your article
+
+## Content Writing Best Practices
+
+### Blog Posts
+
+**Title Guidelines**:
+- Keep under 60 characters for SEO
+- Make it descriptive and interesting
+- Use action words when appropriate
+- Example: "5 Ways to Optimize Your Site" vs "Site Optimization"
+
+**Description Guidelines**:
+- 50-160 characters (optimal for meta description)
+- Include primary keyword
+- Make it compelling
+- Summarize the article value
+
+**Structure**:
+1. Hook (first paragraph)
+2. Introduction (what reader will learn)
+3. Main content (sections with H2/H3)
+4. Conclusion (key takeaways)
+5. Call to action (next steps)
+
+**Formatting**:
+- Use headings for structure (H2 for main sections)
+- Break content into short paragraphs (2-3 sentences)
+- Use bullet points for lists
+- Add code blocks with syntax highlighting
+- Include images to break up text
+- Bold important terms on first use
+
+### Knowledge Base Articles
+
+**Title Guidelines**:
+- Clear and descriptive
+- Start with action words: "How to...", "Guide to...", "Understanding..."
+- Include keywords: "Configuration", "Installation", "Troubleshooting"
+
+**Description Guidelines**:
+- Summarize what the article covers
+- Mention key topics or steps
+- Keep it concise but informative
+
+**Structure**:
+1. Brief introduction
+2. Prerequisites (if any)
+3. Step-by-step instructions
+4. Best practices
+5. Troubleshooting section
+6. Related articles
+
+**Formatting**:
+- Number steps clearly
+- Use code blocks for commands
+- Include screenshots when helpful
+- Add warning/info callouts for important notes
+- Link to related documentation
+
+## Using Markdown Features
+
+### Headings
+
+```markdown
+# H1 - Page Title (only one per page)
+## H2 - Main Sections
+### H3 - Subsections
+#### H4 - Minor subsections
+```
+
+### Text Formatting
+
+```markdown
+**Bold text** for emphasis
+*Italic text* for subtle emphasis
+`inline code` for commands or values
+~~Strikethrough~~ for corrections
+```
+
+### Lists
+
+```markdown
+- Bullet point 1
+- Bullet point 2
+  - Nested point
+  - Another nested point
+
+1. Numbered item 1
+2. Numbered item 2
+   1. Nested numbered item
+   2. Another nested item
+```
+
+### Links
+
+```markdown
+[Link text](https://example.com)
+[Internal link](/blog/another-post)
+[Link with title](https://example.com "Hover text")
+```
+
+### Images
+
+```markdown
+![Alt text](/images/posts/image.jpg)
+![Image with caption](/images/posts/image.jpg "Caption text")
+```
+
+### Code Blocks
+
+````markdown
+```javascript
+// JavaScript code
+const hello = "world";
+```
+
+```bash
+# Bash commands
+npm install
+```
+
+```typescript
+// TypeScript code
+interface User {
+  name: string;
+  email: string;
+}
+```
+````
+
+### Blockquotes
+
+```markdown
+> This is a quote or callout
+> It can span multiple lines
+```
+
+### Tables
+
+```markdown
+| Column 1 | Column 2 | Column 3 |
+|----------|----------|----------|
+| Data 1   | Data 2   | Data 3   |
+| Data 4   | Data 5   | Data 6   |
+```
+
+## SEO Optimization
+
+### Essential SEO Fields
+
+**Title**: Include primary keyword, keep under 60 characters
+
+**Description**: Include keywords naturally, 50-160 characters
+
+**Image**: Use descriptive filenames (my-blog-post.jpg not IMG_1234.jpg)
+
+**Tags**: 3-5 relevant tags, mix specific and general
+
+**URL**: Automatically generated from title, keep it short
+
+### Content SEO Tips
+
+1. **Use Keywords Naturally**: Don't stuff keywords
+2. **Write for Humans First**: SEO follows good content
+3. **Use Headings Properly**: H2 for main topics, H3 for subtopics
+4. **Add Alt Text to Images**: Describe what's in the image
+5. **Link to Related Content**: Internal linking helps SEO
+6. **Keep Content Fresh**: Update lastUpdated date
+
+## Content Organization
+
+### Blog Categories
+
+Organize posts with tags:
+
+- Tutorials
+- Guides
+- News & Updates
+- Case Studies
+- Opinion & Analysis
+
+### Knowledge Base Categories
+
+Use the five built-in categories:
+
+- **Getting Started**: Installation, setup, first steps
+- **Guides**: How-to articles, best practices
+- **Tutorials**: Step-by-step learning paths
+- **API Reference**: Technical documentation
+- **FAQ**: Common questions and answers
+
+### Content Hierarchy
+
+Order articles within categories:
+
+```
+Getting Started
+├── 1. Quick Start Guide (order: 1)
+├── 2. Installation (order: 2)
+└── 3. Configuration (order: 3)
+
+Guides
+├── 1. Component Guide (order: 1)
+├── 2. Styling Guide (order: 2)
+└── 3. Deployment Guide (order: 3)
+```
+
+## Publishing Workflow
+
+### Draft Workflow
+
+1. Create content with `draft: true`
+2. Write and review content
+3. Add images and formatting
+4. Preview on development server
+5. Set `draft: false` when ready
+6. Commit and push to Git
+
+### Review Process
+
+Before publishing:
+
+- ✅ Spell check content
+- ✅ Verify all links work
+- ✅ Test code examples
+- ✅ Check image loading
+- ✅ Verify SEO fields are complete
+- ✅ Preview on mobile view
+- ✅ Read through completely
+
+### Publishing
+
+```bash
+# Build to verify no errors
+npm run build
+
+# Commit your content
+git add .
+git commit -m "Add new blog post: My First Post"
+
+# Push to deploy (if on main branch)
+git push origin main
+```
+
+## Content Updates
+
+### Updating Existing Content
+
+1. Find content file in `src/content/`
+2. Edit via Keystatic or code editor
+3. Update `lastUpdated` date (for KB articles)
+4. Commit and push changes
+
+### Archiving Content
+
+To archive without deleting:
+
+```markdown
+---
+draft: true  # Set to draft to hide from public
+# ... other fields
+---
+```
+
+## Common Issues
+
+**Images not showing**:
+- Verify image is in `public/images/` directory
+- Check path starts with `/images/`
+- Ensure image file format is supported (jpg, png, webp, svg)
+
+**Content not appearing**:
+- Check `draft: false` is set
+- Verify publish date is not in the future
+- Run `npm run astro sync` to update types
+- Restart development server
+
+**Formatting issues**:
+- Ensure proper markdown syntax
+- Check for missing closing tags
+- Verify code blocks have proper backticks
+- Use online markdown validator
+
+## Next Steps
+
+Now that you can create content:
+
+- [Learn about component customization](/knowledge-base/component-creation-guide)
+- [Explore advanced features](/blog)
+- [Optimize for performance](/knowledge-base/performance-checklist)
+
+## Resources
+
+- [Markdown Guide](https://www.markdownguide.org/)
+- [Keystatic Documentation](https://keystatic.com/docs)
+- [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
+
+Start creating amazing content! ✍️

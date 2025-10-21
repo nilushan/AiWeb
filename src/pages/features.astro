@@ -1,0 +1,234 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Feature from '@/components/ui/Feature.astro';
+
+const coreFeatures = [
+  {
+    icon: '⚡',
+    title: 'Lightning Fast Performance',
+    description: 'Built with Astro\'s zero-JavaScript approach by default. Ship less code, load faster, rank higher in search engines.',
+    benefits: ['0KB JavaScript baseline', 'Instant page loads', 'Perfect Lighthouse scores', 'Optimized for Core Web Vitals']
+  },
+  {
+    icon: '🎨',
+    title: 'Beautiful Design System',
+    description: 'Access 30+ professionally designed themes with DaisyUI. Dark mode, light mode, and everything in between.',
+    benefits: ['30+ pre-built themes', 'One-click theme switching', 'Fully responsive design', 'Accessible components']
+  },
+  {
+    icon: '📝',
+    title: 'Powerful Content Management',
+    description: 'Keystatic CMS provides a modern, Git-based content management experience without leaving your code editor.',
+    benefits: ['Visual content editor', 'Git-based versioning', 'Type-safe content', 'No database required']
+  },
+  {
+    icon: '🖼️',
+    title: 'Advanced Image Optimization',
+    description: 'Automatic image optimization with Sharp. WebP conversion, responsive images, and lazy loading out of the box.',
+    benefits: ['Automatic WebP conversion', 'Responsive image generation', 'Lazy loading', 'Next-gen formats']
+  },
+  {
+    icon: '🔍',
+    title: 'SEO Optimized',
+    description: 'Built-in SEO best practices including automatic sitemaps, meta tags, Open Graph, and structured data.',
+    benefits: ['Automatic sitemap generation', 'Meta tags & Open Graph', 'Canonical URLs', 'Twitter Card support']
+  },
+  {
+    icon: '🚀',
+    title: 'Automated Deployment',
+    description: 'GitHub Actions CI/CD pipeline with automatic deployments to GitHub Pages. Push to deploy.',
+    benefits: ['Zero-config deployment', 'Automatic builds', 'Branch previews', 'Build validation']
+  },
+  {
+    icon: '🧩',
+    title: 'Component Library',
+    description: 'Pre-built, customizable components for rapid development. Mix Astro and React components seamlessly.',
+    benefits: ['Reusable components', 'React integration', 'TypeScript support', 'Fully customizable']
+  },
+  {
+    icon: '📱',
+    title: 'Mobile-First Responsive',
+    description: 'Every component and page is built mobile-first with Tailwind CSS. Looks perfect on any device.',
+    benefits: ['Mobile-first design', 'Responsive grid system', 'Touch-friendly UI', 'Cross-browser compatible']
+  },
+  {
+    icon: '🔒',
+    title: 'Type-Safe Development',
+    description: 'Full TypeScript support for your entire codebase. Catch errors before they reach production.',
+    benefits: ['TypeScript everywhere', 'Content type safety', 'IDE autocomplete', 'Compile-time checks']
+  }
+];
+
+const technicalFeatures = [
+  {
+    category: 'Performance',
+    items: [
+      'Partial hydration with Astro Islands',
+      'Automatic code splitting',
+      'CSS optimization and purging',
+      'Asset preloading and prefetching',
+      'HTTP/2 ready architecture'
+    ]
+  },
+  {
+    category: 'Developer Experience',
+    items: [
+      'Hot module replacement (HMR)',
+      'File-based routing',
+      'Component scoped styles',
+      'Built-in markdown support',
+      'Development server with instant preview'
+    ]
+  },
+  {
+    category: 'Content Management',
+    items: [
+      'Three content collections (Blog, Knowledge Base, Pages)',
+      'Rich text editor with Markdoc',
+      'Image upload and management',
+      'Draft and publish workflow',
+      'Content categorization and tagging'
+    ]
+  },
+  {
+    category: 'Customization',
+    items: [
+      'Flexible component system',
+      'Theme customization API',
+      'CSS utility classes',
+      'Custom page layouts',
+      'Extensible configuration'
+    ]
+  }
+];
+---
+
+<BaseLayout
+  title="Features"
+  description="Discover all the powerful features of AiWeb. From lightning-fast performance to advanced content management, we have everything you need."
+>
+  <!-- Hero -->
+  <Hero
+    title="Powerful Features for Modern Web Development"
+    subtitle="Everything you need to build fast, beautiful, and scalable websites"
+  />
+
+  <!-- Core Features Grid -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Core Features</h2>
+        <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+          AiWeb combines the best modern web technologies to deliver exceptional performance and developer experience.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {coreFeatures.map((feature) => (
+          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+            <div class="card-body">
+              <div class="text-5xl mb-4">{feature.icon}</div>
+              <h3 class="card-title text-2xl mb-3">{feature.title}</h3>
+              <p class="text-base-content/70 mb-4">{feature.description}</p>
+              <div class="divider"></div>
+              <ul class="space-y-2">
+                {feature.benefits.map((benefit) => (
+                  <li class="flex items-start gap-2">
+                    <span class="text-success mt-1">✓</span>
+                    <span class="text-sm">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Features -->
+  <section class="section-padding bg-base-200">
+    <div class="container-custom">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Technical Capabilities</h2>
+        <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+          Deep dive into the technical features that power AiWeb
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        {technicalFeatures.map((section) => (
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h3 class="card-title text-2xl mb-4 text-primary">{section.category}</h3>
+              <ul class="space-y-3">
+                {section.items.map((item) => (
+                  <li class="flex items-start gap-3">
+                    <span class="text-primary text-lg mt-0.5">→</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Stack -->
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Built With Modern Technologies</h2>
+        <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+          AiWeb leverages cutting-edge tools and frameworks
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        {[
+          { name: 'Astro', version: '4.16.7', description: 'Static Site Generator' },
+          { name: 'Tailwind CSS', version: '3.4.14', description: 'Utility-First CSS' },
+          { name: 'DaisyUI', version: '4.12.14', description: 'Component Library' },
+          { name: 'Keystatic', version: '5.0.1', description: 'Git-Based CMS' },
+          { name: 'TypeScript', version: '5.6.3', description: 'Type Safety' },
+          { name: 'React', version: '18.3.1', description: 'UI Components' },
+          { name: 'Sharp', version: '0.33.5', description: 'Image Processing' },
+          { name: 'GitHub Actions', version: 'Latest', description: 'CI/CD Pipeline' }
+        ].map((tech) => (
+          <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="card-body p-6 text-center">
+              <h4 class="font-bold text-lg">{tech.name}</h4>
+              <p class="text-xs text-primary">{tech.version}</p>
+              <p class="text-xs text-base-content/60 mt-2">{tech.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-base-200">
+    <div class="container-custom">
+      <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
+        <div class="card-body items-center text-center p-12">
+          <h2 class="card-title text-4xl font-bold mb-4">Ready to Get Started?</h2>
+          <p class="text-xl mb-6 max-w-2xl opacity-90">
+            Experience all these features and more. Start building your next project with AiWeb today.
+          </p>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <a href="/knowledge-base" class="btn btn-accent btn-lg">
+              Read Documentation
+            </a>
+            <a href="/blog" class="btn btn-outline btn-accent btn-lg">
+              View Tutorials
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

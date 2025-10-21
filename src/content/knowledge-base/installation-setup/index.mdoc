@@ -1,0 +1,347 @@
+---
+title: installation-and-setup
+description: Complete installation and setup guide for AiWeb. Get your development environment ready with detailed step-by-step instructions.
+category: getting-started
+order: 2
+icon: 💻
+image: /images/kb/installation.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Installation and Setup Guide
+
+This comprehensive guide walks you through installing and setting up AiWeb on your local machine, from system requirements to your first successful build.
+
+## System Requirements
+
+### Minimum Requirements
+
+- **Operating System**: Windows 10+, macOS 10.15+, or Linux
+- **Node.js**: Version 18.14.1 or higher
+- **npm**: Version 9.0.0 or higher (comes with Node.js)
+- **Memory**: 4GB RAM minimum, 8GB recommended
+- **Disk Space**: 500MB for project and dependencies
+
+### Recommended Setup
+
+- **Node.js**: Latest LTS version (20.x)
+- **Editor**: VS Code with Astro extension
+- **Terminal**: Modern terminal with UTF-8 support
+- **Git**: Latest version for version control
+
+## Checking Prerequisites
+
+Verify your environment before starting:
+
+```bash
+# Check Node.js version
+node --version
+# Should output: v18.14.1 or higher
+
+# Check npm version
+npm --version
+# Should output: 9.0.0 or higher
+
+# Check Git installation
+git --version
+# Should output: git version 2.x.x
+```
+
+## Installation Methods
+
+### Method 1: Clone from GitHub
+
+**Step 1**: Clone the repository
+
+```bash
+git clone https://github.com/yourusername/aiweb.git
+cd aiweb
+```
+
+**Step 2**: Install dependencies
+
+```bash
+npm install
+```
+
+This installs all required packages from `package.json`.
+
+**Step 3**: Start development server
+
+```bash
+npm run dev
+```
+
+Your site will be available at `http://localhost:4321`
+
+### Method 2: Use as Template
+
+**Step 1**: Click "Use this template" on GitHub
+
+Navigate to the repository and click the green "Use this template" button.
+
+**Step 2**: Clone your new repository
+
+```bash
+git clone https://github.com/yourusername/your-new-repo.git
+cd your-new-repo
+```
+
+**Step 3**: Install and run
+
+```bash
+npm install
+npm run dev
+```
+
+### Method 3: Download ZIP
+
+**Step 1**: Download the ZIP file from GitHub
+
+Click Code → Download ZIP
+
+**Step 2**: Extract and navigate
+
+```bash
+unzip aiweb-main.zip
+cd aiweb-main
+```
+
+**Step 3**: Install and run
+
+```bash
+npm install
+npm run dev
+```
+
+## Initial Configuration
+
+### 1. Update Site Metadata
+
+Edit `astro.config.mjs`:
+
+```javascript
+export default defineConfig({
+  site: 'https://yourdomain.com',
+  base: '/',
+  // ... other settings
+});
+```
+
+### 2. Configure Keystatic
+
+Edit `keystatic.config.tsx`:
+
+```typescript
+export default config({
+  storage: {
+    kind: 'local', // Change to 'github' for production
+  },
+  // ... other settings
+});
+```
+
+### 3. Update Package Information
+
+Edit `package.json`:
+
+```json
+{
+  "name": "your-project-name",
+  "description": "Your project description",
+  "author": "Your Name",
+  "repository": {
+    "url": "https://github.com/yourusername/your-repo"
+  }
+}
+```
+
+## Development Environment Setup
+
+### VS Code Extensions
+
+Install recommended extensions:
+
+1. **Astro** (astro-build.astro-vscode)
+2. **Tailwind CSS IntelliSense** (bradlc.vscode-tailwindcss)
+3. **ESLint** (dbaeumer.vscode-eslint)
+4. **Prettier** (esbenp.prettier-vscode)
+
+### VS Code Settings
+
+Create `.vscode/settings.json`:
+
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  }
+}
+```
+
+### Environment Variables
+
+Create `.env` file in project root:
+
+```bash
+PUBLIC_SITE_URL=http://localhost:4321
+# Add other environment variables as needed
+```
+
+## Project Structure
+
+Understanding the structure helps navigate the project:
+
+```
+aiweb/
+├── .github/              # GitHub Actions workflows
+├── .vscode/              # VS Code settings
+├── public/               # Static assets
+│   ├── images/           # Image files
+│   ├── fonts/            # Font files
+│   └── favicon.svg       # Site favicon
+├── src/
+│   ├── components/       # Reusable components
+│   │   ├── ui/           # UI components
+│   │   ├── Header.astro  # Site header
+│   │   └── Footer.astro  # Site footer
+│   ├── content/          # Content collections
+│   │   ├── posts/        # Blog posts
+│   │   ├── knowledge-base/  # KB articles
+│   │   └── pages/        # Custom pages
+│   ├── layouts/          # Page layouts
+│   │   └── BaseLayout.astro
+│   ├── pages/            # File-based routing
+│   │   ├── index.astro   # Homepage
+│   │   ├── blog/         # Blog pages
+│   │   └── knowledge-base/  # KB pages
+│   └── styles/           # Global styles
+│       └── global.css
+├── astro.config.mjs      # Astro configuration
+├── keystatic.config.tsx  # Keystatic CMS config
+├── tailwind.config.mjs   # Tailwind configuration
+├── tsconfig.json         # TypeScript configuration
+└── package.json          # Dependencies
+```
+
+## Available Scripts
+
+Understanding npm scripts:
+
+```bash
+# Development server with hot reload
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
+
+# Run Astro CLI commands
+npm run astro -- <command>
+
+# Sync Astro content types
+npm run astro sync
+```
+
+## Verifying Installation
+
+### Test Build
+
+Ensure everything works:
+
+```bash
+npm run build
+```
+
+Should complete without errors.
+
+### Test Preview
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+Visit `http://localhost:4321` to see the built site.
+
+### Access CMS
+
+Test Keystatic CMS:
+
+```bash
+npm run dev
+```
+
+Navigate to `http://localhost:4321/keystatic`
+
+## Troubleshooting Installation
+
+### Common Issues
+
+**Problem**: `npm install` fails with permission errors
+
+**Solution**: Don't use sudo. Fix npm permissions:
+```bash
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile
+source ~/.profile
+```
+
+**Problem**: Port 4321 already in use
+
+**Solution**: Change port in `package.json`:
+```json
+{
+  "scripts": {
+    "dev": "astro dev --port 3000"
+  }
+}
+```
+
+**Problem**: Module not found errors
+
+**Solution**: Delete node_modules and reinstall:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Problem**: TypeScript errors after installation
+
+**Solution**: Sync Astro types:
+```bash
+npm run astro sync
+```
+
+## Next Steps
+
+Now that installation is complete:
+
+1. [Configure your project](/knowledge-base/configuration-best-practices)
+2. [Create your first content](/knowledge-base/creating-first-content)
+3. [Explore components](/knowledge-base/ui-components)
+4. [Customize themes](/blog/advanced-theme-customization)
+
+## Additional Resources
+
+- [Astro Documentation](https://docs.astro.build)
+- [Node.js Download](https://nodejs.org)
+- [VS Code Download](https://code.visualstudio.com)
+- [Git Documentation](https://git-scm.com/doc)
+
+## Getting Help
+
+If you encounter issues:
+
+- Check [Common Build Issues FAQ](/knowledge-base/build-issues-faq)
+- Review [Deployment Troubleshooting](/knowledge-base/deployment-troubleshooting-faq)
+- Visit [Contact page](/contact)
+
+Happy coding! 🚀

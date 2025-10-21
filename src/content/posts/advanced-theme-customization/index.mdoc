@@ -1,0 +1,701 @@
+---
+title: Advanced Theme Customization with DaisyUI and Tailwind CSS
+description: Master theme customization in AiWeb. Learn how to create custom themes, implement dynamic theme switching, and build beautiful UIs with DaisyUI.
+publishDate: 2024-10-25
+author: AiWeb Team
+image: /images/posts/theme-customization.jpg
+tags:
+  - DaisyUI
+  - Tailwind CSS
+  - Theming
+  - UI Design
+featured: false
+draft: false
+---
+
+# Advanced Theme Customization with DaisyUI and Tailwind CSS
+
+One of AiWeb's standout features is its flexible theming system. With 30+ built-in themes and complete customization capabilities, you can create a unique look for your site in minutes. This guide explores everything from basic theme usage to creating completely custom themes from scratch.
+
+## Understanding the Theming System
+
+### The Stack
+
+Our theming system combines three powerful tools:
+
+1. **Tailwind CSS**: Utility-first CSS framework
+2. **DaisyUI**: Component library with theming
+3. **React**: For dynamic theme switching
+
+```
+User clicks theme switcher
+  → React updates state
+    → localStorage saves preference
+      → DaisyUI applies theme
+        → Tailwind provides utilities
+```
+
+### How DaisyUI Themes Work
+
+DaisyUI themes are CSS custom properties (variables) applied to elements:
+
+```css
+[data-theme="dark"] {
+  --p: 259 94% 51%;      /* primary */
+  --s: 314 100% 47%;     /* secondary */
+  --a: 174 60% 51%;      /* accent */
+  --n: 219 14% 28%;      /* neutral */
+  --b1: 220 18% 20%;     /* base-100 */
+  /* ... more colors */
+}
+```
+
+When you switch themes, the `data-theme` attribute changes:
+
+```html
+<html data-theme="dark">
+  <!-- All components adapt automatically -->
+</html>
+```
+
+## Built-In Themes
+
+### Available Themes
+
+DaisyUI includes 30+ professionally designed themes:
+
+**Light Themes**:
+- light (default)
+- cupcake (pink & calm)
+- bumblebee (yellow & warm)
+- emerald (green & fresh)
+- corporate (blue & professional)
+- retro (vintage look)
+- cyberpunk (neon & futuristic)
+- valentine (romantic pink)
+- garden (green & natural)
+
+**Dark Themes**:
+- dark (default dark)
+- synthwave (purple & neon)
+- halloween (orange & spooky)
+- forest (dark green)
+- black (pure black)
+- luxury (elegant gold)
+- dracula (purple dark)
+- business (professional dark)
+- night (blue dark)
+
+**And many more!**
+
+### Enabling Themes
+
+Configure in Tailwind:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: [
+      'light',
+      'dark',
+      'cupcake',
+      'bumblebee',
+      'emerald',
+      'corporate',
+      'synthwave',
+      'retro',
+      // ... more themes
+    ],
+  },
+};
+```
+
+Or enable all themes:
+
+```javascript
+daisyui: {
+  themes: true, // All 30+ themes
+}
+```
+
+## Theme Switcher Implementation
+
+### React Component
+
+Our theme switcher is a React component with localStorage persistence:
+
+```typescript
+// ThemeSwitcher.tsx
+import { useEffect, useState } from 'react';
+
+const themes = [
+  'light', 'dark', 'cupcake', 'bumblebee', 'emerald',
+  'corporate', 'synthwave', 'retro', 'cyberpunk', 'valentine',
+  // ... more themes
+];
+
+export default function ThemeSwitcher() {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
+  return (
+    <div className="dropdown dropdown-end">
+      <label tabIndex={0} className="btn btn-ghost">
+        Theme
+      </label>
+      <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+        {themes.map((t) => (
+          <li key={t}>
+            <button onClick={() => handleThemeChange(t)}>
+              {t}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Usage in Astro
+
+Load with client-side hydration:
+
+```astro
+<!-- Header.astro -->
+<ThemeSwitcher client:load />
+```
+
+The `client:load` directive ensures JavaScript loads immediately for instant theme switching.
+
+### Preventing Flash of Unstyled Content
+
+Add a script in the `<head>` to apply theme before render:
+
+```astro
+<script is:inline>
+  const theme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+</script>
+```
+
+## Creating Custom Themes
+
+### Method 1: Extending Existing Themes
+
+Start with a base theme and customize:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          ...require('daisyui/src/theming/themes')['dark'],
+          primary: '#0066ff',
+          secondary: '#7c3aed',
+          accent: '#f59e0b',
+          'base-100': '#1f2937',
+        },
+      },
+    ],
+  },
+};
+```
+
+### Method 2: Creating from Scratch
+
+Define all colors yourself:
+
+```javascript
+export default {
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          'primary': '#570df8',          // Primary brand color
+          'primary-content': '#ffffff',  // Text on primary
+          'secondary': '#f000b8',        // Secondary color
+          'secondary-content': '#ffffff', // Text on secondary
+          'accent': '#37cdbe',           // Accent highlights
+          'accent-content': '#163835',   // Text on accent
+          'neutral': '#3d4451',          // Neutral backgrounds
+          'neutral-content': '#ffffff',  // Text on neutral
+          'base-100': '#ffffff',         // Page background
+          'base-200': '#f9fafb',         // Slightly darker
+          'base-300': '#d1d5db',         // Even darker
+          'base-content': '#1f2937',     // Main text color
+          'info': '#3abff8',             // Info alerts
+          'info-content': '#002b3d',     // Text on info
+          'success': '#36d399',          // Success alerts
+          'success-content': '#003320',  // Text on success
+          'warning': '#fbbd23',          // Warning alerts
+          'warning-content': '#382800',  // Text on warning
+          'error': '#f87272',            // Error alerts
+          'error-content': '#470000',    // Text on error
+        },
+      },
+    ],
+  },
+};
+```
+
+### Color System Explanation
+
+DaisyUI uses a semantic color system:
+
+**Brand Colors**:
+- `primary`: Main brand color (CTAs, links, important elements)
+- `secondary`: Supporting brand color
+- `accent`: Highlights and special attention
+
+**Neutral Colors**:
+- `neutral`: Neutral UI elements (borders, disabled states)
+- `base-100/200/300`: Background shades (100 is lightest)
+
+**Semantic Colors**:
+- `info`: Informational messages
+- `success`: Success states and confirmations
+- `warning`: Warnings and cautions
+- `error`: Errors and destructive actions
+
+**Content Colors**:
+Each color has a `-content` variant for text that appears on that color background.
+
+### Using CSS Variables
+
+For maximum flexibility, use CSS variables:
+
+```css
+/* global.css */
+:root {
+  --brand-primary: #0066ff;
+  --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="mytheme"] {
+  --p: 217 91% 60%; /* HSL values for primary */
+}
+```
+
+Then use in components:
+
+```css
+.custom-button {
+  background: var(--brand-gradient);
+  color: var(--brand-primary);
+}
+```
+
+## Advanced Theme Techniques
+
+### Theme-Specific Styles
+
+Apply styles only for specific themes:
+
+```css
+[data-theme="dark"] .hero {
+  background-image: url('/dark-hero.jpg');
+}
+
+[data-theme="light"] .hero {
+  background-image: url('/light-hero.jpg');
+}
+```
+
+### Programmatic Theme Detection
+
+React hook for theme-aware components:
+
+```typescript
+function useTheme() {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      setTheme(currentTheme || 'light');
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}
+
+// Usage
+function ThemedComponent() {
+  const theme = useTheme();
+  return <div>Current theme: {theme}</div>;
+}
+```
+
+### Gradient Backgrounds
+
+Create stunning gradient effects:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  theme: {
+    extend: {
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'gradient-secondary': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'gradient-accent': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      },
+    },
+  },
+};
+```
+
+Use in components:
+
+```astro
+<div class="bg-gradient-primary text-primary-content">
+  Gradient background
+</div>
+```
+
+### Dark Mode Specific Utilities
+
+Tailwind's dark mode with DaisyUI:
+
+```html
+<!-- Shows in light themes, hides in dark themes -->
+<div class="dark:hidden">Light mode content</div>
+
+<!-- Shows in dark themes, hides in light themes -->
+<div class="hidden dark:block">Dark mode content</div>
+```
+
+## Component Customization
+
+### Customizing DaisyUI Components
+
+Override component styles in your config:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  daisyui: {
+    styled: true,
+    themes: true,
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+    prefix: '',
+    darkTheme: 'dark',
+  },
+};
+```
+
+### Custom Component Classes
+
+Combine DaisyUI with custom classes:
+
+```astro
+<button class="btn btn-primary custom-btn-shadow">
+  Custom Button
+</button>
+
+<style>
+  .custom-btn-shadow {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+  }
+
+  .custom-btn-shadow:hover {
+    transform: translateY(-2px);
+  }
+</style>
+```
+
+### Creating Reusable Theme Components
+
+```astro
+---
+// ThemedCard.astro
+interface Props {
+  variant?: 'primary' | 'secondary' | 'accent';
+}
+
+const { variant = 'primary' } = Astro.props;
+---
+
+<div class={`card bg-${variant} text-${variant}-content`}>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
+```
+
+## Theme Presets
+
+### Creating Theme Presets
+
+Define preset color schemes for quick switching:
+
+```typescript
+// themePresets.ts
+export const themePresets = {
+  ocean: {
+    primary: '#0284c7',
+    secondary: '#0891b2',
+    accent: '#06b6d4',
+    neutral: '#1e293b',
+    'base-100': '#f8fafc',
+  },
+  sunset: {
+    primary: '#f97316',
+    secondary: '#fb923c',
+    accent: '#fbbf24',
+    neutral: '#78350f',
+    'base-100': '#fffbeb',
+  },
+  forest: {
+    primary: '#16a34a',
+    secondary: '#84cc16',
+    accent: '#65a30d',
+    neutral: '#14532d',
+    'base-100': '#f0fdf4',
+  },
+  lavender: {
+    primary: '#8b5cf6',
+    secondary: '#a78bfa',
+    accent: '#c4b5fd',
+    neutral: '#4c1d95',
+    'base-100': '#faf5ff',
+  },
+};
+```
+
+### Preset Selector
+
+UI for choosing presets:
+
+```typescript
+function ThemePresetSelector() {
+  const presets = Object.keys(themePresets);
+
+  const applyPreset = (presetName: string) => {
+    const preset = themePresets[presetName];
+    Object.entries(preset).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(`--${key}`, value);
+    });
+  };
+
+  return (
+    <div className="flex gap-2">
+      {presets.map((preset) => (
+        <button
+          key={preset}
+          onClick={() => applyPreset(preset)}
+          className="btn btn-sm"
+        >
+          {preset}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+## Performance Considerations
+
+### Theme Switching Performance
+
+Optimize theme transitions:
+
+```css
+/* Smooth theme transitions */
+html {
+  transition: background-color 0.3s ease;
+}
+
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+```
+
+But exclude transforms for performance:
+
+```css
+* {
+  transition-property: background-color, border-color, color;
+  /* Don't transition transform, opacity for better performance */
+}
+```
+
+### CSS Size Optimization
+
+Limit themes to reduce CSS size:
+
+```javascript
+// Include only themes you use
+daisyui: {
+  themes: ['light', 'dark', 'cupcake'], // Not all 30
+}
+```
+
+## Theme Testing
+
+### Visual Regression Testing
+
+Test themes with Percy or Chromatic:
+
+```javascript
+// cypress/e2e/themes.cy.js
+describe('Theme Switching', () => {
+  const themes = ['light', 'dark', 'cupcake'];
+
+  themes.forEach((theme) => {
+    it(`renders correctly with ${theme} theme`, () => {
+      cy.visit('/');
+      cy.get('[data-theme-switcher]').select(theme);
+      cy.percySnapshot(`Homepage - ${theme}`);
+    });
+  });
+});
+```
+
+### Accessibility Testing
+
+Ensure sufficient contrast in all themes:
+
+```javascript
+// test contrast ratios
+import { checkContrast } from 'wcag-contrast';
+
+test('themes meet WCAG AA contrast requirements', () => {
+  const themes = ['light', 'dark'];
+
+  themes.forEach((theme) => {
+    const primary = getComputedColor('primary', theme);
+    const background = getComputedColor('base-100', theme);
+
+    expect(checkContrast(primary, background)).toBeGreaterThan(4.5);
+  });
+});
+```
+
+## Best Practices
+
+### Do's
+
+1. **Test all themes**: Ensure content is readable in every theme
+2. **Use semantic colors**: primary, secondary, accent for consistency
+3. **Provide light and dark**: Users expect both options
+4. **Persist selection**: Save theme choice to localStorage
+5. **Consider accessibility**: Maintain proper contrast ratios
+
+### Don'ts
+
+1. **Don't hardcode colors**: Use DaisyUI color classes
+2. **Don't ignore flash**: Prevent FOUC with inline script
+3. **Don't overdo transitions**: Keep them subtle
+4. **Don't forget -content colors**: Text must be readable
+5. **Don't include unnecessary themes**: Bloats CSS
+
+## Real-World Examples
+
+### E-commerce Theme
+
+```javascript
+{
+  'ecommerce': {
+    'primary': '#2563eb',      // Trust (blue)
+    'secondary': '#f59e0b',    // Urgency (orange)
+    'accent': '#10b981',       // Success (green)
+    'neutral': '#6b7280',
+    'base-100': '#ffffff',
+    'base-200': '#f9fafb',
+    'base-300': '#e5e7eb',
+  }
+}
+```
+
+### SaaS Dashboard Theme
+
+```javascript
+{
+  'dashboard': {
+    'primary': '#6366f1',      // Indigo
+    'secondary': '#8b5cf6',    // Purple
+    'accent': '#06b6d4',       // Cyan
+    'neutral': '#1e293b',
+    'base-100': '#0f172a',     // Dark background
+    'base-200': '#1e293b',
+    'base-300': '#334155',
+  }
+}
+```
+
+### Blog Theme
+
+```javascript
+{
+  'blog': {
+    'primary': '#334155',      // Slate (readable)
+    'secondary': '#64748b',    // Light slate
+    'accent': '#f97316',       // Orange highlight
+    'neutral': '#94a3b8',
+    'base-100': '#ffffff',
+    'base-200': '#f8fafc',
+    'base-300': '#e2e8f0',
+  }
+}
+```
+
+## Resources
+
+### Tools
+
+- [DaisyUI Theme Generator](https://daisyui.com/theme-generator/)
+- [Tailwind Color Palette Generator](https://uicolors.app/)
+- [Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Coolors](https://coolors.co/) - Color scheme generator
+
+### Documentation
+
+- [DaisyUI Themes Documentation](https://daisyui.com/docs/themes/)
+- [Tailwind CSS Customization](https://tailwindcss.com/docs/theme)
+- [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
+
+## Conclusion
+
+Theme customization in AiWeb offers endless possibilities. Whether you use built-in themes, create custom ones, or implement dynamic theme switching, the DaisyUI + Tailwind CSS combination provides a powerful and flexible foundation.
+
+Remember:
+- Start with built-in themes
+- Customize gradually as needed
+- Test thoroughly across themes
+- Maintain accessibility standards
+- Keep performance in mind
+
+Your site's appearance is a key part of user experience. With AiWeb's theming system, you can create a beautiful, unique look that perfectly represents your brand while maintaining exceptional performance and usability.
+
+Ready to create your custom theme? Check out our [Configuration Best Practices](/knowledge-base/configuration-best-practices) guide for more tips!

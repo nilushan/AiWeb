@@ -1,0 +1,677 @@
+---
+title: component-props-reference
+description: Complete reference for all AiWeb UI component props. Quick lookup for component APIs and usage examples.
+category: api-reference
+order: 2
+icon: 🎯
+image: /images/kb/component-props.jpg
+lastUpdated: 2024-10-27
+featured: false
+---
+
+# Component Props Reference
+
+Quick reference for all AiWeb UI components with props, types, and usage examples.
+
+## Layout Components
+
+### BaseLayout
+
+Main page layout wrapper.
+
+**Props**:
+```typescript
+interface Props {
+  title: string;                    // Page title
+  description?: string;              // Meta description
+  image?: string;                    // OG image
+  canonical?: string | URL;          // Canonical URL
+  noindex?: boolean;                 // Prevent indexing
+  type?: 'website' | 'article';     // OG type
+}
+```
+
+**Usage**:
+```astro
+<BaseLayout
+  title="My Page"
+  description="Page description"
+  image="/images/og-image.jpg"
+>
+  <!-- Page content -->
+</BaseLayout>
+```
+
+## UI Components
+
+### Button
+
+Versatile button component.
+
+**Props**:
+```typescript
+interface Props {
+  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'link';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  outline?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+  wide?: boolean;
+  block?: boolean;
+  circle?: boolean;
+  square?: boolean;
+  class?: string;
+  href?: string;                     // Make it a link
+  target?: '_blank' | '_self';
+}
+```
+
+**Usage**:
+```astro
+<Button variant="primary" size="lg">
+  Click Me
+</Button>
+
+<Button variant="secondary" outline>
+  Secondary
+</Button>
+
+<Button href="/about" variant="ghost">
+  Link Button
+</Button>
+```
+
+### Card
+
+Content card container.
+
+**Props**:
+```typescript
+interface Props {
+  variant?: 'default' | 'bordered' | 'glass' | 'compact';
+  hoverable?: boolean;
+  clickable?: boolean;
+  class?: string;
+}
+```
+
+**Usage**:
+```astro
+<Card variant="bordered" hoverable>
+  <h3>Card Title</h3>
+  <p>Card content goes here.</p>
+</Card>
+```
+
+**Slots**:
+- Default slot: Card body content
+- `image`: Card image slot
+- `actions`: Card footer actions
+
+```astro
+<Card>
+  <img slot="image" src="/image.jpg" alt="Card image" />
+  <h3>Title</h3>
+  <p>Content</p>
+  <div slot="actions">
+    <Button>Action</Button>
+  </div>
+</Card>
+```
+
+### Hero
+
+Hero section component.
+
+**Props**:
+```typescript
+interface Props {
+  title: string;
+  subtitle?: string;
+  image?: string;
+  overlay?: boolean;
+  centered?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+```
+
+**Usage**:
+```astro
+<Hero
+  title="Welcome to AiWeb"
+  subtitle="Build amazing websites"
+  image="/hero.jpg"
+  overlay
+  centered
+  size="lg"
+/>
+```
+
+### Feature
+
+Feature showcase component.
+
+**Props**:
+```typescript
+interface Props {
+  icon: string;                      // Emoji or icon
+  title: string;
+  description: string;
+  link?: string;
+  linkText?: string;
+}
+```
+
+**Usage**:
+```astro
+<Feature
+  icon="⚡"
+  title="Lightning Fast"
+  description="Built for speed from the ground up"
+  link="/features"
+  linkText="Learn more"
+/>
+```
+
+## Content Components
+
+### Alert
+
+Alert/notification component.
+
+**Props**:
+```typescript
+interface Props {
+  type?: 'info' | 'success' | 'warning' | 'error';
+  title?: string;
+  dismissible?: boolean;
+  icon?: string;
+}
+```
+
+**Usage**:
+```astro
+<Alert type="success" title="Success!">
+  Your changes have been saved.
+</Alert>
+
+<Alert type="warning" dismissible>
+  This action cannot be undone.
+</Alert>
+```
+
+### Badge
+
+Small badge/label component.
+
+**Props**:
+```typescript
+interface Props {
+  variant?: 'default' | 'primary' | 'secondary' | 'accent' | 'ghost';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  outline?: boolean;
+}
+```
+
+**Usage**:
+```astro
+<Badge variant="primary">New</Badge>
+<Badge variant="secondary" size="sm">Beta</Badge>
+<Badge outline>Featured</Badge>
+```
+
+### Breadcrumbs
+
+Navigation breadcrumbs.
+
+**Props**:
+```typescript
+interface Props {
+  items: Array<{
+    label: string;
+    href?: string;
+  }>;
+  separator?: string;
+}
+```
+
+**Usage**:
+```astro
+<Breadcrumbs
+  items={[
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Current Post' },
+  ]}
+  separator=">"
+/>
+```
+
+## Form Components
+
+### Input
+
+Text input field.
+
+**Props**:
+```typescript
+interface Props {
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+  placeholder?: string;
+  value?: string;
+  disabled?: boolean;
+  required?: boolean;
+  bordered?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  class?: string;
+}
+```
+
+**Usage**:
+```astro
+<Input
+  type="email"
+  placeholder="Enter email"
+  required
+  bordered
+/>
+```
+
+### Select
+
+Dropdown select field.
+
+**Props**:
+```typescript
+interface Props {
+  options: Array<{
+    label: string;
+    value: string;
+  }>;
+  placeholder?: string;
+  value?: string;
+  disabled?: boolean;
+  required?: boolean;
+  bordered?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+}
+```
+
+**Usage**:
+```astro
+<Select
+  options={[
+    { label: 'Option 1', value: '1' },
+    { label: 'Option 2', value: '2' },
+  ]}
+  placeholder="Select option"
+  bordered
+/>
+```
+
+### Textarea
+
+Multi-line text input.
+
+**Props**:
+```typescript
+interface Props {
+  placeholder?: string;
+  value?: string;
+  rows?: number;
+  disabled?: boolean;
+  required?: boolean;
+  bordered?: boolean;
+  class?: string;
+}
+```
+
+**Usage**:
+```astro
+<Textarea
+  placeholder="Enter your message"
+  rows={5}
+  bordered
+  required
+/>
+```
+
+## Navigation Components
+
+### Tabs
+
+Tab navigation component.
+
+**Props**:
+```typescript
+interface Props {
+  tabs: Array<{
+    id: string;
+    label: string;
+    active?: boolean;
+  }>;
+  variant?: 'bordered' | 'lifted' | 'boxed';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+}
+```
+
+**Usage**:
+```astro
+<Tabs
+  tabs={[
+    { id: 'tab1', label: 'Tab 1', active: true },
+    { id: 'tab2', label: 'Tab 2' },
+    { id: 'tab3', label: 'Tab 3' },
+  ]}
+  variant="boxed"
+/>
+```
+
+### Pagination
+
+Page navigation component.
+
+**Props**:
+```typescript
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
+  showFirstLast?: boolean;
+  maxPages?: number;                 // Max page buttons to show
+}
+```
+
+**Usage**:
+```astro
+<Pagination
+  currentPage={5}
+  totalPages={10}
+  baseUrl="/blog"
+  showFirstLast
+  maxPages={7}
+/>
+```
+
+## Modal Components
+
+### Modal
+
+Modal dialog component (React).
+
+**Props**:
+```typescript
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  size?: 'sm' | 'md' | 'lg' | 'full';
+  closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
+}
+```
+
+**Usage**:
+```typescript
+<Modal
+  isOpen={showModal}
+  onClose={() => setShowModal(false)}
+  title="Modal Title"
+  size="md"
+>
+  <p>Modal content</p>
+</Modal>
+```
+
+## Media Components
+
+### Image
+
+Optimized image component (extends Astro's Image).
+
+**Props**:
+```typescript
+interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  width: number;
+  height: number;
+  format?: 'webp' | 'avif' | 'jpeg' | 'png';
+  quality?: number;                  // 1-100
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  class?: string;
+}
+```
+
+**Usage**:
+```astro
+<Image
+  src="/images/hero.jpg"
+  alt="Hero image"
+  width={1200}
+  height={630}
+  format="webp"
+  quality={80}
+  loading="lazy"
+/>
+```
+
+### Video
+
+Video player component.
+
+**Props**:
+```typescript
+interface Props {
+  src: string;
+  poster?: string;                   // Thumbnail
+  controls?: boolean;
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  width?: number;
+  height?: number;
+}
+```
+
+**Usage**:
+```astro
+<Video
+  src="/videos/intro.mp4"
+  poster="/images/video-thumb.jpg"
+  controls
+  width={1280}
+  height={720}
+/>
+```
+
+## Loading Components
+
+### Spinner
+
+Loading spinner component.
+
+**Props**:
+```typescript
+interface Props {
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  variant?: 'spinner' | 'dots' | 'ring' | 'ball' | 'bars';
+  color?: 'primary' | 'secondary' | 'accent';
+}
+```
+
+**Usage**:
+```astro
+<Spinner size="lg" variant="spinner" color="primary" />
+```
+
+### Skeleton
+
+Skeleton loader for content placeholders.
+
+**Props**:
+```typescript
+interface Props {
+  variant?: 'text' | 'rectangular' | 'circular';
+  width?: string;
+  height?: string;
+  count?: number;                    // Number of lines for text
+}
+```
+
+**Usage**:
+```astro
+<Skeleton variant="text" count={3} />
+<Skeleton variant="rectangular" width="100%" height="200px" />
+<Skeleton variant="circular" width="64px" height="64px" />
+```
+
+## Utility Components
+
+### Tooltip
+
+Tooltip component (React).
+
+**Props**:
+```typescript
+interface Props {
+  content: string;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  trigger?: 'hover' | 'click';
+}
+```
+
+**Usage**:
+```typescript
+<Tooltip content="Click me!" position="top">
+  <Button>Hover me</Button>
+</Tooltip>
+```
+
+### Collapse
+
+Collapsible content component.
+
+**Props**:
+```typescript
+interface Props {
+  title: string;
+  defaultOpen?: boolean;
+  icon?: string;
+}
+```
+
+**Usage**:
+```astro
+<Collapse title="Click to expand" defaultOpen>
+  <p>Hidden content here</p>
+</Collapse>
+```
+
+## Theme Components
+
+### ThemeSwitcher
+
+Theme selection component (React).
+
+**Props**:
+```typescript
+interface Props {
+  themes?: string[];                 // Available themes
+  defaultTheme?: string;
+  showLabel?: boolean;
+}
+```
+
+**Usage**:
+```astro
+<ThemeSwitcher
+  themes={['light', 'dark', 'cupcake']}
+  defaultTheme="light"
+  showLabel
+  client:load
+/>
+```
+
+## SEO Components
+
+### SEO
+
+SEO meta tags component.
+
+**Props**:
+```typescript
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  canonical?: string | URL;
+  noindex?: boolean;
+  type?: 'website' | 'article';
+  publishDate?: Date;
+  author?: string;
+  tags?: string[];
+}
+```
+
+**Usage**:
+```astro
+<SEO
+  title="Page Title"
+  description="Page description"
+  image="/og-image.jpg"
+  canonical="https://example.com/page"
+  type="article"
+  publishDate={new Date('2024-10-27')}
+  author="John Doe"
+  tags={['tag1', 'tag2']}
+/>
+```
+
+## Common Patterns
+
+### Conditional Rendering
+
+```astro
+<Button
+  variant={isPrimary ? 'primary' : 'secondary'}
+  disabled={isLoading}
+>
+  {isLoading ? 'Loading...' : 'Submit'}
+</Button>
+```
+
+### Dynamic Classes
+
+```astro
+<Card
+  class={`custom-card ${featured ? 'featured' : ''}`}
+  hoverable={!disabled}
+>
+  Content
+</Card>
+```
+
+### Slot Usage
+
+```astro
+<Modal>
+  <h2 slot="header">Modal Title</h2>
+  <p>Modal content</p>
+  <div slot="footer">
+    <Button>Cancel</Button>
+    <Button variant="primary">Confirm</Button>
+  </div>
+</Modal>
+```
+
+## Next Steps
+
+- [Learn Component Creation](/knowledge-base/component-creation-guide)
+- [Build Custom Components](/knowledge-base/custom-components-tutorial)
+- [Explore UI Components](/knowledge-base/ui-components)
+
+Quick reference complete! 🎯
