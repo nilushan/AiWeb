@@ -26,9 +26,9 @@ Due to the git proxy restrictions in this development environment, I cannot dire
 
 4. **Done!** The workflow will trigger automatically on the next push to `main`
 
-### Option 2: Deploy from Current Branch
+### Option 2: Manual Deployment from Current Branch
 
-The GitHub Actions workflow has been configured to also work with `claude/*` branches, so you can test the deployment right now:
+You can manually trigger a deployment from any branch (including the current one) for testing:
 
 1. **Enable GitHub Pages:**
    - Go to your repository **Settings** → **Pages**
@@ -45,6 +45,10 @@ The GitHub Actions workflow has been configured to also work with `claude/*` bra
    - Watch the workflow run in the Actions tab
    - Once complete, your site will be live
 
+**Note:**
+- Automatic deployments only happen on commits/merges to `main` or `master` branches
+- Pull requests to `main`/`master` will build and validate but won't deploy (test-only)
+
 ## After Main Branch is Created
 
 Once you have a `main` branch (via Option 1), you can:
@@ -55,8 +59,10 @@ Once you have a `main` branch (via Option 1), you can:
 
 2. **Future workflow:**
    - Make changes in feature branches
-   - Merge to `main` via Pull Request
-   - GitHub Pages deploys automatically
+   - Create Pull Request to `main`
+   - GitHub Action validates the build (no deployment)
+   - Merge the PR after review
+   - GitHub Pages deploys automatically after merge
 
 3. **Content updates:**
    ```bash
@@ -76,8 +82,9 @@ Once you have a `main` branch (via Option 1), you can:
 ## What's Already Configured
 
 ✅ GitHub Actions workflow created
-✅ Automatic deployment on push to main/master/claude branches
-✅ Manual workflow dispatch enabled
+✅ Automatic deployment on push to main/master branches
+✅ Build validation on pull requests (no deployment)
+✅ Manual workflow dispatch enabled (works from any branch)
 ✅ Environment-aware build configuration
 ✅ Static output for GitHub Pages
 ✅ Keystatic CMS works locally
