@@ -1,0 +1,630 @@
+---
+title: configuration-best-practices
+description: Best practices for configuring AiWeb. Learn how to optimize settings for performance, SEO, and user experience.
+category: guides
+order: 3
+icon: ⚙️
+image: /images/kb/configuration.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Configuration Best Practices
+
+Proper configuration is crucial for optimal performance, SEO, and maintainability. This guide covers best practices for configuring every aspect of AiWeb.
+
+## Astro Configuration
+
+### Base Configuration
+
+Edit `astro.config.mjs` with production values:
+
+```javascript
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import tailwind from '@astrojs/tailwind';
+import keystatic from '@keystatic/astro';
+
+export default defineConfig({
+  // Site URL (required for SEO and sitemap)
+  site: 'https://yourdomain.com',
+
+  // Base path if not at root
+  base: '/',
+
+  // Output mode
+  output: 'static',
+
+  // Integrations
+  integrations: [
+    react(),
+    tailwind(),
+    keystatic(),
+  ],
+
+  // Build configuration
+  build: {
+    assets: 'assets',
+    inlineStylesheets: 'auto',
+  },
+
+  // Image optimization
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+    },
+  },
+
+  // Markdown configuration
+  markdown: {
+    shikiConfig: {
+      theme: 'github-dark',
+    },
+  },
+
+  // Development server
+  server: {
+    port: 4321,
+    host: true,
+  },
+});
+```
+
+### Production vs Development
+
+Use environment-aware configuration:
+
+```javascript
+const isDev = import.meta.env.DEV;
+
+export default defineConfig({
+  site: isDev
+    ? 'http://localhost:4321'
+    : 'https://yourdomain.com',
+
+  // Enable draft content in development
+  markdown: {
+    drafts: isDev,
+  },
+});
+```
+
+## Tailwind Configuration
+
+### Optimal Setup
+
+Edit `tailwind.config.mjs`:
+
+```javascript
+export default {
+  content: [
+    './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
+  ],
+
+  theme: {
+    extend: {
+      // Custom colors
+      colors: {
+        brand: {
+          primary: '#0066ff',
+          secondary: '#7c3aed',
+        },
+      },
+
+      // Custom fonts
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+      },
+
+      // Custom spacing
+      spacing: {
+        '128': '32rem',
+        '144': '36rem',
+      },
+
+      // Custom breakpoints
+      screens: {
+        '3xl': '1920px',
+      },
+    },
+  },
+
+  plugins: [require('daisyui')],
+
+  daisyui: {
+    // Include only themes you use
+    themes: [
+      'light',
+      'dark',
+      'cupcake',
+      // Add your custom theme
+      {
+        mytheme: {
+          primary: '#0066ff',
+          // ... other colors
+        },
+      },
+    ],
+
+    // Optimize bundle size
+    styled: true,
+    base: true,
+    utils: true,
+    logs: false,
+  },
+};
+```
+
+### Performance Optimization
+
+Minimize CSS size:
+
+```javascript
+export default {
+  // Only scan necessary files
+  content: [
+    './src/**/*.{astro,html,js,jsx,ts,tsx}',
+    // Don't scan node_modules
+  ],
+
+  // Remove unused utilities
+  safelist: [
+    // Only add classes generated dynamically
+    'bg-primary',
+    'text-secondary',
+  ],
+};
+```
+
+## Keystatic Configuration
+
+### Basic Setup
+
+Edit `keystatic.config.tsx`:
+
+```typescript
+import { config, collection, fields } from '@keystatic/core';
+
+export default config({
+  // Storage mode
+  storage: {
+    kind: process.env.NODE_ENV === 'production'
+      ? 'github'
+      : 'local',
+    repo: {
+      owner: 'yourusername',
+      name: 'your-repo',
+    },
+  },
+
+  // UI configuration
+  ui: {
+    brand: {
+      name: 'AiWeb Admin',
+      mark: () => '✨',
+    },
+    navigation: {
+      Blog: ['posts'],
+      'Knowledge Base': ['knowledge-base'],
+      Pages: ['pages'],
+    },
+  },
+
+  // Collections
+  collections: {
+    // Define your collections here
+  },
+});
+```
+
+### Collection Best Practices
+
+Configure collections with validation:
+
+```typescript
+posts: collection({
+  label: 'Blog Posts',
+  path: 'src/content/posts/*/',
+  slugField: 'title',
+  format: { contentField: 'content' },
+
+  schema: {
+    title: fields.slug({
+      name: {
+        label: 'Title',
+        validation: {
+          length: {
+            min: 10,
+            max: 100,
+          },
+        },
+      },
+    }),
+
+    description: fields.text({
+      label: 'Description',
+      multiline: true,
+      validation: {
+        length: {
+          min: 50,
+          max: 160, // SEO meta description limit
+        },
+      },
+    }),
+
+    publishDate: fields.date({
+      label: 'Publish Date',
+      defaultValue: { kind: 'today' },
+    }),
+
+    // More fields...
+  },
+}),
+```
+
+## TypeScript Configuration
+
+### Recommended Settings
+
+Edit `tsconfig.json`:
+
+```json
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+
+    // Path aliases
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/layouts/*": ["src/layouts/*"],
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+### Path Aliases
+
+Use consistent path aliases:
+
+```typescript
+// Instead of relative imports
+import Header from '../../components/Header.astro';
+
+// Use aliases
+import Header from '@/components/Header.astro';
+```
+
+## Environment Variables
+
+### Setup
+
+Create `.env` file:
+
+```bash
+# Public variables (accessible in client-side code)
+PUBLIC_SITE_URL=https://yourdomain.com
+PUBLIC_SITE_NAME=AiWeb
+
+# Private variables (server-side only)
+SECRET_API_KEY=your_secret_key
+DATABASE_URL=your_database_url
+```
+
+### Usage
+
+Access in code:
+
+```typescript
+// Public variables
+const siteUrl = import.meta.env.PUBLIC_SITE_URL;
+
+// Private variables (server-side only)
+const apiKey = import.meta.env.SECRET_API_KEY;
+```
+
+### Environment-Specific
+
+Create multiple env files:
+
+```bash
+.env                # Default
+.env.development    # Development overrides
+.env.production     # Production overrides
+```
+
+## SEO Configuration
+
+### Global SEO Settings
+
+Create SEO config file:
+
+```typescript
+// src/config/seo.ts
+export const seoConfig = {
+  title: 'AiWeb - Modern Static Site Generator',
+  description: 'Build fast, beautiful websites with Astro, DaisyUI, and Keystatic CMS',
+  author: 'Your Name',
+  defaultImage: '/images/og-default.jpg',
+  twitterHandle: '@yourusername',
+  locale: 'en-US',
+  type: 'website',
+};
+```
+
+Use in SEO component:
+
+```astro
+---
+import { seoConfig } from '@/config/seo';
+
+const { title, description } = Astro.props;
+const fullTitle = title ? `${title} | ${seoConfig.title}` : seoConfig.title;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description || seoConfig.description} />
+```
+
+## Image Configuration
+
+### Optimization Settings
+
+Configure Sharp service:
+
+```javascript
+// astro.config.mjs
+export default defineConfig({
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: false,
+      },
+    },
+    domains: [],
+    remotePatterns: [],
+  },
+});
+```
+
+### Image Best Practices
+
+1. Store images in `public/images/`
+2. Use WebP format when possible
+3. Set explicit width/height
+4. Use lazy loading for off-screen images
+5. Provide alt text for accessibility
+
+## Build Configuration
+
+### Optimization
+
+Configure build options:
+
+```javascript
+export default defineConfig({
+  build: {
+    // Asset output directory
+    assets: 'assets',
+
+    // Inline stylesheets under 1KB
+    inlineStylesheets: 'auto',
+
+    // Generate sourcemaps for debugging
+    format: 'directory',
+  },
+
+  vite: {
+    build: {
+      // Chunk size warnings threshold
+      chunkSizeWarningLimit: 1000,
+
+      // Manual chunks for better caching
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+## Git Configuration
+
+### .gitignore
+
+Ensure proper gitignore:
+
+```bash
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/*
+!.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+```
+
+### Git Attributes
+
+Create `.gitattributes`:
+
+```bash
+# Normalize line endings
+* text=auto
+
+# Binary files
+*.jpg binary
+*.png binary
+*.gif binary
+*.woff2 binary
+```
+
+## Performance Checklist
+
+### Must-Have Configurations
+
+- ✅ Set correct `site` URL in astro.config
+- ✅ Enable image optimization
+- ✅ Configure Tailwind purging
+- ✅ Use only necessary DaisyUI themes
+- ✅ Enable asset inlining for small files
+- ✅ Configure proper caching headers
+- ✅ Use environment variables for secrets
+- ✅ Enable TypeScript strict mode
+- ✅ Configure path aliases
+- ✅ Set up proper gitignore
+
+## Security Best Practices
+
+### Environment Variables
+
+- Never commit .env files
+- Use PUBLIC_ prefix for client-side variables
+- Rotate secrets regularly
+- Use different keys for each environment
+
+### Dependencies
+
+```bash
+# Audit dependencies regularly
+npm audit
+
+# Update dependencies
+npm update
+
+# Check for outdated packages
+npm outdated
+```
+
+### Content Security
+
+```javascript
+// Add security headers in deployment
+export const headers = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+};
+```
+
+## Monitoring Configuration
+
+### Analytics
+
+Add analytics in production:
+
+```astro
+---
+const isProd = import.meta.env.PROD;
+---
+
+{isProd && (
+  <script async src="https://analytics.example.com/script.js"></script>
+)}
+```
+
+### Error Tracking
+
+Configure error reporting:
+
+```typescript
+if (import.meta.env.PROD) {
+  // Initialize error tracking
+  Sentry.init({
+    dsn: import.meta.env.SENTRY_DSN,
+  });
+}
+```
+
+## Testing Configuration
+
+### Test Environment
+
+Create `vitest.config.ts`:
+
+```typescript
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+  },
+});
+```
+
+## Deployment Configuration
+
+### GitHub Actions
+
+Verify `.github/workflows/deploy.yml` settings:
+
+```yaml
+env:
+  NODE_VERSION: '20'
+  BUILD_PATH: './dist'
+```
+
+### Build Command
+
+Ensure build command is correct:
+
+```json
+{
+  "scripts": {
+    "build": "astro check && astro build"
+  }
+}
+```
+
+## Next Steps
+
+- [Create your first content](/knowledge-base/creating-first-content)
+- [Optimize performance](/knowledge-base/performance-checklist)
+- [Deploy your site](/knowledge-base/deployment-troubleshooting-faq)
+
+## Additional Resources
+
+- [Astro Configuration Reference](https://docs.astro.build/en/reference/configuration-reference/)
+- [Tailwind Configuration](https://tailwindcss.com/docs/configuration)
+- [Keystatic Configuration](https://keystatic.com/docs/configuration)
+
+Your configuration is the foundation of your project. Take time to set it up properly for long-term success! ⚙️

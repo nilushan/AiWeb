@@ -1,0 +1,577 @@
+---
+title: component-creation-guide
+description: Learn how to create custom components in AiWeb. Build reusable UI components with Astro and React.
+category: guides
+order: 4
+icon: 🧩
+image: /images/kb/components.jpg
+lastUpdated: 2024-10-27
+featured: false
+---
+
+# Component Creation Guide
+
+Components are the building blocks of your AiWeb site. This guide teaches you how to create custom, reusable components using Astro and React.
+
+## Understanding Components
+
+### Component Types in AiWeb
+
+**Astro Components** (.astro):
+- Server-rendered by default
+- No JavaScript sent to client
+- Perfect for static content
+- Can include other components
+
+**React Components** (.tsx):
+- Interactive UI elements
+- Client-side JavaScript
+- Use for dynamic features
+- Hydrated on client
+
+**When to use which**:
+- Astro: Headers, footers, cards, static content
+- React: Forms, modals, theme switchers, interactive widgets
+
+## Creating Astro Components
+
+### Basic Component
+
+Create `src/components/Alert.astro`:
+
+```astro
+---
+interface Props {
+  type?: 'info' | 'success' | 'warning' | 'error';
+  title?: string;
+}
+
+const { type = 'info', title } = Astro.props;
+---
+
+<div class={`alert alert-${type}`}>
+  {title && <h3 class="font-bold">{title}</h3>}
+  <slot />
+</div>
+```
+
+Usage:
+
+```astro
+<Alert type="success" title="Success!">
+  Your changes have been saved.
+</Alert>
+```
+
+### Component with Default Content
+
+```astro
+---
+// EmptyState.astro
+interface Props {
+  icon?: string;
+  message?: string;
+}
+
+const { icon = '📭', message = 'No items found' } = Astro.props;
+---
+
+<div class="text-center py-12">
+  <div class="text-6xl mb-4">{icon}</div>
+  <p class="text-xl text-base-content/70">{message}</p>
+  <slot name="action" />
+</div>
+```
+
+Usage with named slots:
+
+```astro
+<EmptyState icon="🔍" message="No results">
+  <div slot="action">
+    <button class="btn btn-primary">Try Again</button>
+  </div>
+</EmptyState>
+```
+
+### Advanced Props
+
+```astro
+---
+// Card.astro
+interface Props {
+  variant?: 'default' | 'bordered' | 'glass';
+  compact?: boolean;
+  hoverable?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  compact = false,
+  hoverable = true,
+  class: className = '',
+} = Astro.props;
+
+const variants = {
+  default: 'bg-base-100',
+  bordered: 'bg-base-100 border border-base-300',
+  glass: 'bg-base-100/70 backdrop-blur-lg',
+};
+---
+
+<div
+  class={`card shadow-xl ${variants[variant]} ${compact ? 'card-compact' : ''} ${hoverable ? 'card-hover' : ''} ${className}`}
+>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
+```
+
+## Creating React Components
+
+### Basic Interactive Component
+
+Create `src/components/Counter.tsx`:
+
+```typescript
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="card bg-base-100 shadow-xl">
+      <div className="card-body items-center text-center">
+        <h2 className="card-title text-4xl">{count}</h2>
+        <div className="card-actions">
+          <button
+            className="btn btn-primary"
+            onClick={() => setCount(count + 1)}
+          >
+            Increment
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setCount(count - 1)}
+          >
+            Decrement
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+Usage in Astro:
+
+```astro
+---
+import Counter from '@/components/Counter';
+---
+
+<Counter client:load />
+```
+
+### Component with Props
+
+```typescript
+// Newsletter.tsx
+interface Props {
+  buttonText?: string;
+  placeholder?: string;
+}
+
+export default function Newsletter({
+  buttonText = 'Subscribe',
+  placeholder = 'Enter your email',
+}: Props) {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      // API call here
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      setStatus('success');
+      setEmail('');
+    } catch (error) {
+      setStatus('error');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder={placeholder}
+        className="input input-bordered flex-1"
+        required
+      />
+      <button
+        type="submit"
+        className="btn btn-primary"
+        disabled={status === 'loading'}
+      >
+        {status === 'loading' ? 'Sending...' : buttonText}
+      </button>
+    </form>
+  );
+}
+```
+
+## Component Best Practices
+
+### 1. Use TypeScript Interfaces
+
+Always define prop types:
+
+```astro
+---
+interface Props {
+  title: string;
+  description?: string;
+  variant?: 'primary' | 'secondary';
+}
+---
+```
+
+### 2. Provide Sensible Defaults
+
+```astro
+const {
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+} = Astro.props;
+```
+
+### 3. Use Slots for Flexibility
+
+```astro
+<div class="component">
+  <slot name="header" />
+  <slot />  <!-- Default slot -->
+  <slot name="footer" />
+</div>
+```
+
+### 4. Make Components Composable
+
+```astro
+<!-- Good: Flexible and composable -->
+<Card>
+  <CardHeader>Title</CardHeader>
+  <CardBody>Content</CardBody>
+  <CardFooter>Actions</CardFooter>
+</Card>
+
+<!-- Avoid: Rigid structure -->
+<Card title="Title" body="Content" footer="Actions" />
+```
+
+### 5. Style with Utility Classes
+
+```astro
+<!-- Use Tailwind/DaisyUI classes -->
+<div class="card bg-base-100 shadow-xl p-6">
+  <!-- Content -->
+</div>
+```
+
+## Component Patterns
+
+### Layout Components
+
+```astro
+---
+// TwoColumnLayout.astro
+interface Props {
+  reverse?: boolean;
+}
+
+const { reverse = false } = Astro.props;
+---
+
+<div class={`grid md:grid-cols-2 gap-8 ${reverse ? 'md:grid-flow-dense' : ''}`}>
+  <div class={reverse ? 'md:col-start-2' : ''}>
+    <slot name="left" />
+  </div>
+  <div>
+    <slot name="right" />
+  </div>
+</div>
+```
+
+### Compound Components
+
+```astro
+<!-- Tabs.astro -->
+<div class="tabs tabs-boxed">
+  <slot />
+</div>
+
+<!-- Tab.astro -->
+---
+interface Props {
+  active?: boolean;
+}
+const { active = false } = Astro.props;
+---
+
+<button class={`tab ${active ? 'tab-active' : ''}`}>
+  <slot />
+</button>
+```
+
+Usage:
+
+```astro
+<Tabs>
+  <Tab active>Tab 1</Tab>
+  <Tab>Tab 2</Tab>
+  <Tab>Tab 3</Tab>
+</Tabs>
+```
+
+### Higher-Order Components
+
+```astro
+---
+// WithLoading.astro
+interface Props {
+  isLoading: boolean;
+}
+
+const { isLoading } = Astro.props;
+---
+
+{isLoading ? (
+  <div class="loading loading-spinner loading-lg"></div>
+) : (
+  <slot />
+)}
+```
+
+## Styling Components
+
+### Scoped Styles
+
+```astro
+<div class="custom-component">
+  <slot />
+</div>
+
+<style>
+  .custom-component {
+    /* Styles scoped to this component */
+    border: 2px solid var(--primary);
+  }
+</style>
+```
+
+### Global Styles
+
+```astro
+<style is:global>
+  /* Global styles */
+  .global-class {
+    color: red;
+  }
+</style>
+```
+
+### CSS Variables
+
+```astro
+---
+interface Props {
+  primaryColor?: string;
+}
+
+const { primaryColor = '#0066ff' } = Astro.props;
+---
+
+<div style={`--primary-color: ${primaryColor}`} class="themed-component">
+  <slot />
+</div>
+
+<style>
+  .themed-component {
+    color: var(--primary-color);
+  }
+</style>
+```
+
+## Testing Components
+
+### Visual Testing
+
+```astro
+<!-- Create demo page: src/pages/demos/components.astro -->
+---
+import MyComponent from '@/components/MyComponent.astro';
+---
+
+<div class="p-8 space-y-8">
+  <section>
+    <h2>Default</h2>
+    <MyComponent />
+  </section>
+
+  <section>
+    <h2>With Props</h2>
+    <MyComponent variant="primary" />
+  </section>
+
+  <section>
+    <h2>Different States</h2>
+    <MyComponent disabled />
+  </section>
+</div>
+```
+
+### Unit Testing (React)
+
+```typescript
+// Counter.test.tsx
+import { render, fireEvent } from '@testing-library/react';
+import Counter from './Counter';
+
+test('increments counter', () => {
+  const { getByText } = render(<Counter />);
+
+  fireEvent.click(getByText('Increment'));
+
+  expect(getByText('1')).toBeInTheDocument();
+});
+```
+
+## Performance Optimization
+
+### Lazy Load React Components
+
+```astro
+<!-- Load only when visible -->
+<HeavyComponent client:visible />
+
+<!-- Load when browser is idle -->
+<NonCritical component client:idle />
+
+<!-- Load based on media query -->
+<MobileMenu client:media="(max-width: 768px)" />
+```
+
+### Avoid Unnecessary Re-renders
+
+```typescript
+// Use memo for expensive computations
+const MemoizedComponent = React.memo(ExpensiveComponent);
+
+// Use useMemo for computed values
+const computedValue = useMemo(() => {
+  return expensiveCalculation(data);
+}, [data]);
+```
+
+## Common Patterns
+
+### Accordion Component
+
+```astro
+<!-- Accordion.astro -->
+<div class="collapse collapse-plus bg-base-200">
+  <input type="radio" name="accordion" />
+  <div class="collapse-title text-xl font-medium">
+    <slot name="title" />
+  </div>
+  <div class="collapse-content">
+    <slot />
+  </div>
+</div>
+```
+
+### Modal Component
+
+```typescript
+// Modal.tsx
+import { useState, useEffect } from 'react';
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+}
+
+export default function Modal({ isOpen, onClose, title, children }: Props) {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal modal-open">
+      <div className="modal-box">
+        {title && <h3 className="font-bold text-lg mb-4">{title}</h3>}
+        {children}
+        <div className="modal-action">
+          <button className="btn" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Documentation
+
+Document your components:
+
+```astro
+---
+/**
+ * Alert Component
+ *
+ * Displays an alert message with various types and optional title.
+ *
+ * @param type - Alert type: 'info' | 'success' | 'warning' | 'error'
+ * @param title - Optional alert title
+ *
+ * @example
+ * <Alert type="success" title="Success!">
+ *   Operation completed successfully.
+ * </Alert>
+ */
+interface Props {
+  type?: 'info' | 'success' | 'warning' | 'error';
+  title?: string;
+}
+---
+```
+
+## Next Steps
+
+- [Explore Component Props Reference](/knowledge-base/component-props-reference)
+- [Learn about custom components tutorial](/knowledge-base/custom-components-tutorial)
+- [Read UI Components guide](/knowledge-base/ui-components)
+
+Start building amazing components! 🧩

@@ -1,0 +1,798 @@
+---
+title: CI/CD with GitHub Actions - Automated Deployment Made Simple
+description: Learn how AiWeb implements continuous integration and deployment with GitHub Actions. From automated builds to zero-downtime deployments.
+publishDate: 2024-10-26
+author: AiWeb Team
+image: /images/posts/cicd-deployment.jpg
+tags:
+  - CI/CD
+  - GitHub Actions
+  - Deployment
+  - DevOps
+featured: false
+draft: false
+---
+
+# CI/CD with GitHub Actions: Automated Deployment Made Simple
+
+One of the most satisfying aspects of modern web development is pushing code and seeing it automatically deployed to production. AiWeb achieves this through GitHub Actions, providing a robust CI/CD pipeline that builds, tests, and deploys your site with zero manual intervention.
+
+## Why Automate Deployment?
+
+### The Benefits
+
+**Consistency**: Every deployment follows the same process, eliminating human error.
+
+**Speed**: Code reaches production in minutes, not hours or days.
+
+**Confidence**: Automated testing catches issues before they reach users.
+
+**Productivity**: Developers focus on code, not deployment mechanics.
+
+**Traceability**: Every deployment is tracked and can be rolled back instantly.
+
+### The Old Way vs. The New Way
+
+**Manual Deployment**:
+```bash
+npm run build
+scp -r dist/* user@server:/var/www/
+ssh user@server "systemctl restart nginx"
+# Hope nothing breaks 🤞
+```
+
+**Automated Deployment**:
+```bash
+git push origin main
+# ✨ Magic happens automatically
+# Site deploys in 2 minutes
+# Rollback with one click if needed
+```
+
+## GitHub Actions Overview
+
+### What Are GitHub Actions?
+
+GitHub Actions is a CI/CD platform that:
+- Runs workflows on GitHub's infrastructure
+- Triggers on events (push, PR, schedule, manual)
+- Executes jobs in parallel or sequence
+- Provides pre-built actions from the marketplace
+- Integrates seamlessly with GitHub repositories
+
+### Key Concepts
+
+**Workflows**: Automated processes defined in YAML files
+
+**Jobs**: Groups of steps that run on the same runner
+
+**Steps**: Individual tasks within a job
+
+**Actions**: Reusable units of code
+
+**Runners**: Servers that execute workflows
+
+## AiWeb's Deployment Workflow
+
+### The Complete Pipeline
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with Astro
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+### Breaking It Down
+
+#### 1. Trigger Configuration
+
+```yaml
+on:
+  push:
+    branches: [main]      # Deploy on main branch push
+  pull_request:
+    branches: [main]      # Build (but don't deploy) on PRs
+  workflow_dispatch:      # Allow manual deployment
+```
+
+**Why this matters**:
+- Main branch pushes go straight to production
+- PRs are validated without deploying
+- Manual trigger for emergency deployments
+
+#### 2. Permissions
+
+```yaml
+permissions:
+  contents: read          # Read repository content
+  pages: write            # Write to GitHub Pages
+  id-token: write         # Generate deployment token
+```
+
+Following principle of least privilege—only grant necessary permissions.
+
+#### 3. Concurrency Control
+
+```yaml
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+```
+
+Prevents simultaneous deployments from causing conflicts.
+
+#### 4. Build Job
+
+```yaml
+build:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4        # Get code
+    - uses: actions/setup-node@v4      # Setup Node.js
+      with:
+        node-version: '20'
+        cache: 'npm'                   # Cache npm packages
+    - run: npm ci                      # Install dependencies
+    - run: npm run build               # Build site
+    - uses: actions/upload-pages-artifact@v3  # Upload for deployment
+```
+
+**Optimizations**:
+- `npm ci` is faster than `npm install` for CI
+- Caching speeds up subsequent runs
+- Artifact upload prepares for deployment
+
+#### 5. Deploy Job
+
+```yaml
+deploy:
+  needs: build              # Run after build succeeds
+  runs-on: ubuntu-latest
+  environment:
+    name: github-pages
+    url: ${{ steps.deployment.outputs.page_url }}
+  steps:
+    - uses: actions/deploy-pages@v4
+```
+
+Only runs if build succeeds—no broken deployments!
+
+## Advanced Workflow Patterns
+
+### Pull Request Previews
+
+Build but don't deploy PRs:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - run: npm run build
+
+      # Only deploy on main branch
+      - name: Upload artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    # Only run deploy job on main branch
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v4
+```
+
+### Build Validation on All Branches
+
+```yaml
+name: Build Validation
+
+on:
+  push:
+    branches: ['**']  # All branches
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test  # Add tests
+```
+
+Catches issues early, before merging to main.
+
+### Scheduled Deployments
+
+Deploy automatically on a schedule:
+
+```yaml
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+```
+
+Useful for:
+- Rebuilding sites with dynamic data
+- Refreshing API-sourced content
+- Updating timestamps
+
+### Manual Deployment with Inputs
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - preview
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying to ${{ inputs.environment }}"
+```
+
+## Optimization Techniques
+
+### Caching Strategies
+
+#### Cache Node Modules
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'  # Automatically caches npm packages
+```
+
+**Result**: 2-3x faster builds after first run.
+
+#### Custom Cache
+
+For additional caching:
+
+```yaml
+- name: Cache Astro build
+  uses: actions/cache@v3
+  with:
+    path: |
+      .astro
+      node_modules/.astro
+    key: ${{ runner.os }}-astro-${{ hashFiles('**/package-lock.json') }}
+```
+
+### Parallel Jobs
+
+Run tests and builds in parallel:
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build
+
+  deploy:
+    needs: [test, build]  # Wait for both
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v4
+```
+
+### Matrix Builds
+
+Test across multiple Node versions:
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm test
+```
+
+## Environment Variables and Secrets
+
+### Using Environment Variables
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      SITE_URL: https://example.com
+    steps:
+      - run: npm run build
+```
+
+### Managing Secrets
+
+Store sensitive data in GitHub Secrets:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to custom server
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: |
+          echo "Deploying with credentials"
+```
+
+Add secrets at: Repository Settings → Secrets and variables → Actions
+
+### Environment-Specific Configuration
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://example.com
+    steps:
+      - run: echo "Production deployment"
+```
+
+Environments can have:
+- Protection rules (required reviewers)
+- Secrets (environment-specific)
+- Deployment branches (restrict to main)
+
+## Error Handling and Notifications
+
+### Conditional Steps
+
+Run steps only on success or failure:
+
+```yaml
+steps:
+  - name: Build
+    run: npm run build
+
+  - name: Notify on success
+    if: success()
+    run: echo "Build succeeded!"
+
+  - name: Notify on failure
+    if: failure()
+    run: echo "Build failed!"
+
+  - name: Always run cleanup
+    if: always()
+    run: echo "Cleanup..."
+```
+
+### Slack Notifications
+
+```yaml
+- name: Notify Slack on failure
+  if: failure()
+  uses: slackapi/slack-github-action@v1
+  with:
+    payload: |
+      {
+        "text": "Deployment failed: ${{ github.event.head_commit.message }}"
+      }
+  env:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+### Email Notifications
+
+GitHub sends emails automatically for:
+- Workflow failures (if you're the committer)
+- Manual approval requests
+- Deployment status changes
+
+## Deployment Strategies
+
+### Blue-Green Deployment
+
+Maintain two production environments:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to staging
+        run: deploy-to-staging.sh
+
+      - name: Run smoke tests
+        run: npm run test:smoke
+
+      - name: Switch to production
+        if: success()
+        run: switch-production.sh
+```
+
+### Canary Deployment
+
+Gradually roll out to users:
+
+```yaml
+jobs:
+  deploy-canary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to 10% of users
+        run: deploy-canary.sh 10
+
+      - name: Monitor metrics
+        run: sleep 300  # Wait 5 minutes
+
+      - name: Full deployment
+        if: success()
+        run: deploy-canary.sh 100
+```
+
+### Rolling Deployment
+
+Update servers one at a time:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        server: [server1, server2, server3]
+      max-parallel: 1  # One at a time
+    steps:
+      - name: Deploy to ${{ matrix.server }}
+        run: deploy.sh ${{ matrix.server }}
+```
+
+## Monitoring and Debugging
+
+### Workflow Logs
+
+View detailed logs in GitHub:
+1. Go to Actions tab
+2. Click workflow run
+3. Click job name
+4. Expand step to see output
+
+### Debug Mode
+
+Enable debug logging:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug info
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+```
+
+Or enable runner diagnostics:
+- Repository Settings → Secrets and variables → Actions
+- Add secret: `ACTIONS_RUNNER_DEBUG` = `true`
+
+### Workflow Status Badge
+
+Show build status in README:
+
+```markdown
+![Deploy Status](https://github.com/username/repo/workflows/Deploy/badge.svg)
+```
+
+## Security Best Practices
+
+### Principle of Least Privilege
+
+```yaml
+permissions:
+  contents: read  # Only what's needed
+  pages: write
+  # Don't grant excessive permissions
+```
+
+### Secure Secrets
+
+- Never commit secrets to code
+- Use GitHub Secrets for sensitive data
+- Rotate secrets regularly
+- Limit secret scope to specific environments
+
+### Dependency Security
+
+```yaml
+- name: Audit dependencies
+  run: npm audit --production
+
+- name: Check for vulnerabilities
+  uses: snyk/actions/node@master
+  with:
+    command: test
+  env:
+    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+```
+
+### Code Scanning
+
+```yaml
+- name: Run CodeQL analysis
+  uses: github/codeql-action/analyze@v2
+```
+
+## Cost Optimization
+
+### GitHub Actions Pricing
+
+- **Free tier**: 2,000 minutes/month for private repos
+- **Public repos**: Unlimited free minutes
+- **Additional minutes**: $0.008 per minute
+
+### Optimization Tips
+
+1. **Cache aggressively**: Reduce build times
+2. **Use matrix builds wisely**: Don't test unnecessary combinations
+3. **Self-hosted runners**: For high-volume projects
+4. **Cancel redundant workflows**: Don't build abandoned PRs
+
+```yaml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true  # Cancel old runs on new push
+```
+
+## Troubleshooting Common Issues
+
+### Build Failures
+
+**Problem**: `npm ci` fails
+
+**Solution**: Delete `package-lock.json` and regenerate:
+```bash
+rm package-lock.json
+npm install
+git commit -am "Regenerate lock file"
+```
+
+**Problem**: Out of memory during build
+
+**Solution**: Increase Node memory:
+```yaml
+- name: Build
+  run: NODE_OPTIONS="--max-old-space-size=4096" npm run build
+```
+
+### Deployment Failures
+
+**Problem**: GitHub Pages not updating
+
+**Solution**: Check GitHub Pages settings:
+- Settings → Pages
+- Ensure source is "GitHub Actions"
+- Verify custom domain (if used)
+
+**Problem**: 404 errors after deployment
+
+**Solution**: Check `astro.config.mjs`:
+```javascript
+export default defineConfig({
+  site: 'https://username.github.io',
+  base: '/repo-name',  // If not root
+});
+```
+
+### Permission Errors
+
+**Problem**: `Resource not accessible by integration`
+
+**Solution**: Check workflow permissions:
+```yaml
+permissions:
+  contents: read
+  pages: write       # Add if missing
+  id-token: write    # Add if missing
+```
+
+## Advanced Examples
+
+### Multi-Environment Deployment
+
+```yaml
+on:
+  push:
+    branches: [main, staging, develop]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/staging" ]; then
+            echo "env=staging" >> $GITHUB_OUTPUT
+          else
+            echo "env=development" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to ${{ steps.env.outputs.env }}
+        run: deploy.sh ${{ steps.env.outputs.env }}
+```
+
+### Automated Rollback
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        id: deploy
+        run: deploy.sh
+
+      - name: Health check
+        id: health
+        run: |
+          sleep 30  # Wait for deployment
+          curl -f https://example.com/health || exit 1
+
+      - name: Rollback on failure
+        if: failure() && steps.deploy.outcome == 'success'
+        run: rollback.sh
+```
+
+### Deployment Approval
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      # GitHub will pause here for approval
+      - name: Deploy
+        run: deploy.sh
+```
+
+Configure in: Settings → Environments → production → Required reviewers
+
+## Best Practices Summary
+
+### Do
+
+1. **Test before deploying**: Run tests in build job
+2. **Use caching**: Speed up workflows significantly
+3. **Pin action versions**: Use `@v4` not `@main` for stability
+4. **Monitor workflows**: Check logs regularly
+5. **Document workflows**: Add comments in YAML
+
+### Don't
+
+1. **Store secrets in code**: Use GitHub Secrets
+2. **Grant excessive permissions**: Minimal necessary only
+3. **Ignore failed builds**: Fix immediately
+4. **Deploy without testing**: Always validate first
+5. **Forget about rollback**: Plan for failures
+
+## Resources
+
+### GitHub Actions Documentation
+
+- [GitHub Actions Docs](https://docs.github.com/en/actions)
+- [Workflow Syntax](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
+- [GitHub Pages Action](https://github.com/actions/deploy-pages)
+
+### Community Resources
+
+- [Awesome Actions](https://github.com/sdras/awesome-actions)
+- [GitHub Actions Marketplace](https://github.com/marketplace?type=actions)
+
+### AiWeb Resources
+
+- [Deployment Guide](/knowledge-base/deployment-troubleshooting-faq)
+- [Configuration Guide](/knowledge-base/configuration-best-practices)
+
+## Conclusion
+
+Automated deployment with GitHub Actions transforms the development experience. What once required manual coordination, server access, and careful timing now happens automatically with every push. The result: faster iterations, fewer errors, and more time for building features.
+
+AiWeb's CI/CD pipeline demonstrates that sophisticated automation doesn't require complex tools or infrastructure. With GitHub Actions and GitHub Pages, you get:
+- Zero-cost hosting for public projects
+- Automatic builds and deployments
+- Built-in security and reliability
+- Global CDN distribution
+- Version control integration
+
+The future of web deployment is automated, and it's available today. Start shipping faster with confidence!
+
+Ready to set up your own CI/CD pipeline? Check our [Quick Start Guide](/knowledge-base/quick-start-guide) to get started!
