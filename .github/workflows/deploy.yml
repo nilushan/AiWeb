@@ -46,6 +46,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
@@ -57,13 +58,14 @@ jobs:
           npm run build
         working-directory: ${{ env.BUILD_PATH }}
         env:
-          # Use the Pages URL from the configure-pages action
-          SITE_URL: ${{ steps.pages.outputs.origin }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Use the Pages URL from the configure-pages action (if available)
+          SITE_URL: ${{ steps.pages.outputs.origin || 'https://nilushan.github.io' }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path || '/AiWeb' }}
           NODE_ENV: production
           CI: true
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
