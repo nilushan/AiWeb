@@ -1,11 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Runs on direct commits or merges to main/master branch
+  # Runs on all pushes to validate builds (deploys only from main/master)
   push:
     branches:
-      - main
-      - master
+      - '**'
   # Runs on pull requests to main/master (build & test only, no deployment)
   pull_request:
     branches:
@@ -46,7 +45,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
@@ -65,7 +64,7 @@ jobs:
           CI: true
 
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
@@ -74,8 +73,10 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
-    # Only deploy on push to main/master, not on PRs
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    # Only deploy on push to main/master or manual dispatch, not on PRs or feature branches
+    if: |
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) ||
+      github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

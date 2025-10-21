@@ -166,9 +166,10 @@ This repository includes a GitHub Actions workflow for automatic deployment to G
 Your site will be live at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME`
 
 **Workflow:**
+- ✅ **All Branches** - Build & validate on every push
 - ✅ **Pull Requests** - Build & validate (no deployment)
-- ✅ **Merge to Main** - Automatic deployment
-- ✅ **Direct Push** - Automatic deployment
+- ✅ **Push to Main** - Build, validate & deploy automatically
+- ✅ **Manual Trigger** - Deploy from any branch
 
 📖 **[Full Deployment Guide](DEPLOYMENT.md)** - Detailed instructions for GitHub Pages and other platforms
 

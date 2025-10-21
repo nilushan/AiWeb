@@ -46,8 +46,10 @@ You can manually trigger a deployment from any branch (including the current one
    - Once complete, your site will be live
 
 **Note:**
-- Automatic deployments only happen on commits/merges to `main` or `master` branches
-- Pull requests to `main`/`master` will build and validate but won't deploy (test-only)
+- **All branches** get build validation on every push (catches errors early!)
+- **Pull requests** to `main`/`master` will build and validate (no deployment)
+- **Automatic deployments** only happen on commits/merges to `main` or `master` branches
+- **Manual deployments** can be triggered from any branch via Actions tab
 
 ## After Main Branch is Created
 
@@ -79,10 +81,63 @@ Once you have a `main` branch (via Option 1), you can:
    # Automatic deployment happens!
    ```
 
+## Workflow Behavior
+
+The GitHub Actions workflow runs differently based on the event:
+
+### 📦 Push to Feature Branch
+```
+feature-branch → Push
+  ↓
+  ✅ Checkout code
+  ✅ Install dependencies
+  ✅ Build with Astro (validate)
+  ❌ Skip: Pages setup
+  ❌ Skip: Upload artifact
+  ❌ Skip: Deploy
+```
+**Result:** Build validation only (catches errors early!)
+
+### 🔀 Pull Request to Main
+```
+feature-branch → PR to main
+  ↓
+  ✅ Checkout code
+  ✅ Install dependencies
+  ✅ Build with Astro (validate)
+  ❌ Skip: Pages setup
+  ❌ Skip: Upload artifact
+  ❌ Skip: Deploy
+```
+**Result:** Build validation (prevents broken PRs from being merged)
+
+### 🚀 Push/Merge to Main
+```
+main branch → Push/Merge
+  ↓
+  ✅ Checkout code
+  ✅ Install dependencies
+  ✅ Setup Pages
+  ✅ Build with Astro
+  ✅ Upload Pages artifact
+  ✅ Deploy to GitHub Pages
+```
+**Result:** Full deployment to production!
+
+### 🎯 Manual Dispatch
+```
+Any branch → Manual trigger
+  ↓
+  ✅ All steps (same as main push)
+  ✅ Deploy to GitHub Pages
+```
+**Result:** Manual deployment for testing
+
 ## What's Already Configured
 
 ✅ GitHub Actions workflow created
-✅ Automatic deployment on push to main/master branches
+✅ **Build validation on ALL branches** (every push validates the build)
+✅ Automatic deployment ONLY on push to main/master branches
 ✅ Build validation on pull requests (no deployment)
 ✅ Manual workflow dispatch enabled (works from any branch)
 ✅ Environment-aware build configuration
