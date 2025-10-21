@@ -1,9 +1,12 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Runs on pushes to main branch
+  # Runs on pushes to main/master branch or any claude/* branch
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
+      - 'claude/**'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
