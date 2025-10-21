@@ -1,0 +1,590 @@
+---
+title: deployment-troubleshooting-faq
+description: Solutions to common deployment issues. Troubleshoot GitHub Pages, CI/CD, and production problems.
+category: faq
+order: 2
+icon: 🚀
+image: /images/kb/deployment.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Deployment Troubleshooting FAQ
+
+Quick solutions to common deployment and production issues.
+
+## GitHub Pages Issues
+
+### Q: Site not updating after push
+
+**Problem**: Pushed changes but site still shows old version
+
+**Solution**:
+
+1. **Check workflow status**:
+   - Go to repository → Actions tab
+   - Check if workflow completed successfully
+   - Look for any error messages
+
+2. **Wait for CDN cache**:
+   ```bash
+   # GitHub Pages CDN can take 5-10 minutes
+   # Clear browser cache or use incognito mode
+   ```
+
+3. **Verify branch**:
+   ```bash
+   git branch  # Should be on main/master
+   git push origin main  # Push to correct branch
+   ```
+
+4. **Check GitHub Pages settings**:
+   - Settings → Pages
+   - Source should be "GitHub Actions"
+   - Custom domain configured correctly (if applicable)
+
+### Q: 404 errors on all pages except homepage
+
+**Problem**: Homepage works but other pages return 404
+
+**Solution**:
+Check `astro.config.mjs` base path:
+
+```javascript
+// For username.github.io (root domain)
+export default defineConfig({
+  site: 'https://username.github.io',
+  base: '/',  // Root
+});
+
+// For username.github.io/repo-name
+export default defineConfig({
+  site: 'https://username.github.io',
+  base: '/repo-name',  // Add repo name
+});
+```
+
+Update links to use base:
+
+```astro
+<!-- ❌ Wrong for repo deployment -->
+<a href="/about">About</a>
+
+<!-- ✓ Correct -->
+<a href={`${import.meta.env.BASE_URL}about`}>About</a>
+
+<!-- ✓ Or relative -->
+<a href="about">About</a>
+```
+
+### Q: CSS and JS not loading
+
+**Problem**: Site loads but no styling or JavaScript
+
+**Solution**:
+
+1. **Check base path** (see above)
+
+2. **Verify build output**:
+```bash
+npm run build
+ls dist/  # Check files are present
+```
+
+3. **Check browser console**:
+   - Open DevTools → Console
+   - Look for 404 errors on assets
+   - Note the URLs trying to load
+
+4. **Update asset paths**:
+```astro
+<!-- Use relative paths -->
+<link rel="stylesheet" href="./styles.css">
+
+<!-- Or use Astro's asset handling -->
+<link rel="stylesheet" href={Astro.resolve('../styles/global.css')}>
+```
+
+### Q: Custom domain not working
+
+**Problem**: Custom domain shows GitHub 404
+
+**Solution**:
+
+1. **Configure DNS** (at domain registrar):
+```
+# A Records (point to GitHub)
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+
+# Or CNAME (for subdomain)
+username.github.io
+```
+
+2. **Add CNAME file**:
+```bash
+echo "yourdomain.com" > public/CNAME
+git add public/CNAME
+git commit -m "Add CNAME"
+git push
+```
+
+3. **Enable HTTPS**:
+   - Settings → Pages
+   - Check "Enforce HTTPS"
+   - Wait 24 hours for certificate
+
+4. **Verify DNS propagation**:
+```bash
+dig yourdomain.com
+nslookup yourdomain.com
+```
+
+## GitHub Actions Issues
+
+### Q: Workflow fails with permission error
+
+**Error**:
+```
+Resource not accessible by integration
+```
+
+**Solution**:
+Update workflow permissions:
+
+```yaml
+# .github/workflows/deploy.yml
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+```
+
+Check repository settings:
+- Settings → Actions → General
+- Workflow permissions: "Read and write permissions"
+
+### Q: Build succeeds but deployment fails
+
+**Error in Actions log**:
+```
+Error: No artifact named "github-pages" found
+```
+
+**Solution**:
+Check artifact upload step:
+
+```yaml
+- name: Upload artifact
+  uses: actions/upload-pages-artifact@v3
+  with:
+    path: ./dist  # Ensure this matches build output
+```
+
+Verify dist folder exists after build:
+
+```yaml
+- name: Build
+  run: npm run build
+
+- name: List dist contents
+  run: ls -la dist/
+```
+
+### Q: Environment secrets not working
+
+**Error**:
+```
+Error: Environment variable not found
+```
+
+**Solution**:
+
+1. **Check secret name**:
+```yaml
+env:
+  API_KEY: ${{ secrets.API_KEY }}  # Exact match
+```
+
+2. **Verify secret is set**:
+   - Settings → Secrets and variables → Actions
+   - Check secret exists and name matches
+
+3. **Use correct context**:
+```yaml
+# ✓ Repository secret
+${{ secrets.SECRET_NAME }}
+
+# ✓ Environment secret
+${{ secrets.SECRET_NAME }}  # Same syntax, set in environment
+
+# ✓ Environment variable
+${{ env.VAR_NAME }}
+```
+
+### Q: Workflow runs twice on push
+
+**Problem**: Duplicate builds on each commit
+
+**Solution**:
+Check trigger configuration:
+
+```yaml
+on:
+  push:
+    branches: [main]
+  # Remove pull_request if not needed
+```
+
+Or use concurrency:
+
+```yaml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+```
+
+## Build Issues in Production
+
+### Q: Build works locally but fails in CI
+
+**Problem**: `npm run build` succeeds locally but fails in GitHub Actions
+
+**Common causes**:
+
+1. **Node version mismatch**:
+```yaml
+# Match your local Node version
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'  # Check with: node --version
+```
+
+2. **Missing environment variables**:
+```yaml
+env:
+  PUBLIC_SITE_URL: https://yourdomain.com
+  # Add all required PUBLIC_ vars
+```
+
+3. **Case-sensitive imports**:
+```typescript
+// ❌ Fails on Linux (CI)
+import Header from '@/components/header.astro';
+
+// ✓ Correct (match filename exactly)
+import Header from '@/components/Header.astro';
+```
+
+4. **Locked dependencies**:
+```bash
+# Commit package-lock.json
+git add package-lock.json
+git commit -m "Lock dependencies"
+```
+
+### Q: TypeScript errors in CI but not locally
+
+**Problem**: CI shows type errors that don't appear locally
+
+**Solution**:
+
+1. **Run type check locally**:
+```bash
+npm run astro check
+```
+
+2. **Sync types**:
+```bash
+npm run astro sync
+git add src/env.d.ts
+git commit -m "Sync Astro types"
+```
+
+3. **Use same TypeScript version**:
+```bash
+npm install --save-dev typescript@5.6.3
+```
+
+## Performance Issues
+
+### Q: Site loads slowly in production
+
+**Problem**: Site is fast locally but slow after deployment
+
+**Solutions**:
+
+1. **Enable compression**:
+```javascript
+// astro.config.mjs
+import compress from 'astro-compress';
+
+export default defineConfig({
+  integrations: [compress()],
+});
+```
+
+2. **Optimize images**:
+```astro
+<!-- Always use Image component -->
+import { Image } from 'astro:assets';
+
+<Image
+  src={image}
+  width={800}
+  height={600}
+  format="webp"
+  loading="lazy"
+/>
+```
+
+3. **Lazy load components**:
+```astro
+<HeavyComponent client:visible />
+```
+
+4. **Check bundle size**:
+```bash
+npm run build
+ls -lh dist/_astro/*.js  # Check JS bundle sizes
+```
+
+### Q: Images load slowly
+
+**Problem**: Images take long to download
+
+**Solutions**:
+
+1. **Use WebP format**:
+```astro
+<Image src={image} format="webp" quality={80} />
+```
+
+2. **Implement responsive images**:
+```astro
+<Image
+  src={image}
+  widths={[400, 800, 1200]}
+  sizes="(max-width: 640px) 400px, (max-width: 1024px) 800px, 1200px"
+/>
+```
+
+3. **Use CDN** (if using custom server):
+```javascript
+// Point to CDN
+image: {
+  domains: ['cdn.example.com'],
+}
+```
+
+## SSL/HTTPS Issues
+
+### Q: Mixed content warnings
+
+**Error in console**:
+```
+Mixed Content: The page was loaded over HTTPS, but requested an insecure resource
+```
+
+**Solution**:
+Change all HTTP URLs to HTTPS:
+
+```astro
+<!-- ❌ HTTP -->
+<img src="http://example.com/image.jpg">
+<script src="http://example.com/script.js"></script>
+
+<!-- ✓ HTTPS -->
+<img src="https://example.com/image.jpg">
+<script src="https://example.com/script.js"></script>
+
+<!-- ✓ Protocol-relative -->
+<img src="//example.com/image.jpg">
+```
+
+### Q: SSL certificate errors
+
+**Problem**: Browser shows security warning
+
+**Solution**:
+
+For GitHub Pages:
+- Wait 24 hours after adding custom domain
+- Ensure DNS is configured correctly
+- Enable "Enforce HTTPS" in settings
+
+For custom server:
+```bash
+# Install Let's Encrypt certificate
+sudo certbot --nginx -d yourdomain.com
+```
+
+## Caching Issues
+
+### Q: Old content still showing
+
+**Problem**: Updated site but users see old version
+
+**Solutions**:
+
+1. **Add cache-busting**:
+```javascript
+// Astro automatically adds hashes to assets
+// dist/_astro/header.abc123.js
+```
+
+2. **Set cache headers**:
+```javascript
+// For custom server
+Cache-Control: public, max-age=31536000, immutable  // Assets
+Cache-Control: public, max-age=3600                  // HTML
+```
+
+3. **Clear CDN cache**:
+```bash
+# GitHub Pages: Wait 5-10 minutes
+# Cloudflare: Purge cache in dashboard
+```
+
+### Q: Service worker causing issues
+
+**Problem**: Old service worker serving stale content
+
+**Solution**:
+
+1. **Update service worker**:
+```javascript
+// Increment version
+const CACHE_VERSION = 'v2';  // Was v1
+```
+
+2. **Force update**:
+```javascript
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_VERSION)
+          .map((name) => caches.delete(name))
+      );
+    })
+  );
+});
+```
+
+## Monitoring and Debugging
+
+### Q: How to debug production issues?
+
+**Solutions**:
+
+1. **Check browser console**:
+   - F12 → Console tab
+   - Look for JavaScript errors
+   - Check network tab for failed requests
+
+2. **Use Lighthouse**:
+```bash
+lighthouse https://yourdomain.com --view
+```
+
+3. **Monitor Core Web Vitals**:
+```typescript
+import { onCLS, onFID, onLCP } from 'web-vitals';
+
+onCLS(console.log);
+onFID(console.log);
+onLCP(console.log);
+```
+
+4. **Set up error tracking**:
+```typescript
+// Sentry, LogRocket, etc.
+if (import.meta.env.PROD) {
+  Sentry.init({ dsn: '...' });
+}
+```
+
+### Q: How to rollback deployment?
+
+**Solutions**:
+
+1. **Revert commit**:
+```bash
+git revert HEAD
+git push origin main
+```
+
+2. **Rollback to specific commit**:
+```bash
+git reset --hard abc123
+git push --force origin main  # Use with caution!
+```
+
+3. **Redeploy previous version**:
+   - GitHub Actions → Select previous workflow
+   - Click "Re-run jobs"
+
+## Checklist Before Deploying
+
+- ✅ Build succeeds locally (`npm run build`)
+- ✅ Preview works (`npm run preview`)
+- ✅ Type check passes (`npm run astro check`)
+- ✅ All environment variables set
+- ✅ Base path configured correctly
+- ✅ Images optimized
+- ✅ No console errors
+- ✅ Lighthouse score > 90
+- ✅ Test on mobile
+- ✅ SSL certificate valid
+- ✅ Custom domain DNS configured
+- ✅ Analytics working
+- ✅ Forms submitting correctly
+- ✅ Links working
+
+## Emergency Procedures
+
+### Site is down
+
+1. Check GitHub Actions status
+2. Check GitHub Pages status page
+3. Verify DNS if using custom domain
+4. Rollback to last working commit
+5. Contact support if needed
+
+### Data loss
+
+1. Check Git history: `git log`
+2. Restore from backup: `git checkout abc123 -- file.mdoc`
+3. Use GitHub file history
+4. Check local backups
+
+## Getting Help
+
+### Diagnostic Information to Provide
+
+```bash
+# System info
+node --version
+npm --version
+git --version
+
+# Project info
+cat package.json | grep version
+git log --oneline -5
+
+# Build output
+npm run build 2>&1 | tee build.log
+```
+
+### Where to Get Help
+
+- [AiWeb Discussions](https://github.com)
+- [Astro Discord](https://astro.build/chat)
+- [GitHub Support](https://support.github.com)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/astro)
+
+Deploy with confidence! 🚀

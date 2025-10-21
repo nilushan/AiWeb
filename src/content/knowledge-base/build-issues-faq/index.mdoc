@@ -1,0 +1,614 @@
+---
+title: common-build-issues-faq
+description: Solutions to common build issues in AiWeb. Troubleshoot errors, warnings, and problems during development and production builds.
+category: faq
+order: 1
+icon: 🔧
+image: /images/kb/build-issues.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Common Build Issues FAQ
+
+Quick solutions to frequently encountered build issues in AiWeb.
+
+## npm/Node.js Issues
+
+### Q: `npm install` fails with permission errors
+
+**Error**:
+```
+EACCES: permission denied
+```
+
+**Solution**:
+Never use sudo with npm. Fix permissions:
+
+```bash
+# Create npm global directory
+mkdir ~/.npm-global
+
+# Configure npm
+npm config set prefix '~/.npm-global'
+
+# Add to PATH
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile
+source ~/.profile
+
+# Try again
+npm install
+```
+
+### Q: `npm ci` fails with lock file errors
+
+**Error**:
+```
+npm ERR! cipm can only install packages with an existing package-lock.json
+```
+
+**Solution**:
+Delete and regenerate lock file:
+
+```bash
+rm package-lock.json
+npm install
+git add package-lock.json
+git commit -m "Regenerate package-lock.json"
+```
+
+### Q: Node version mismatch errors
+
+**Error**:
+```
+The engine "node" is incompatible with this module
+```
+
+**Solution**:
+Check and update Node.js version:
+
+```bash
+# Check current version
+node --version
+
+# Should be 18.14.1 or higher
+# Update Node.js via nvm:
+nvm install 20
+nvm use 20
+```
+
+## TypeScript Errors
+
+### Q: "Cannot find module" errors
+
+**Error**:
+```
+Cannot find module '@/components/Header.astro'
+```
+
+**Solution 1**: Sync Astro types
+
+```bash
+npm run astro sync
+```
+
+**Solution 2**: Check tsconfig.json paths:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+**Solution 3**: Restart TypeScript server in VS Code:
+- Cmd/Ctrl + Shift + P
+- Type "TypeScript: Restart TS Server"
+
+### Q: Type errors in content collections
+
+**Error**:
+```
+Property 'data' does not exist on type 'CollectionEntry<"posts">'
+```
+
+**Solution**:
+Regenerate content types:
+
+```bash
+npm run astro sync
+```
+
+If that doesn't work:
+
+```bash
+rm -rf .astro
+npm run dev
+```
+
+### Q: React type errors
+
+**Error**:
+```
+JSX element type does not have any construct or call signatures
+```
+
+**Solution**:
+Check tsconfig.json has correct JSX settings:
+
+```json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  }
+}
+```
+
+## Build Errors
+
+### Q: Build fails with "Out of memory" error
+
+**Error**:
+```
+FATAL ERROR: Reached heap limit Allocation failed
+```
+
+**Solution**:
+Increase Node.js memory:
+
+```json
+// package.json
+{
+  "scripts": {
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' astro build"
+  }
+}
+```
+
+### Q: Image optimization fails
+
+**Error**:
+```
+Could not process image
+```
+
+**Solution 1**: Install Sharp:
+
+```bash
+npm install sharp
+```
+
+**Solution 2**: Check image file:
+- Is it corrupted?
+- Is the format supported? (jpg, png, webp, svg)
+- Is the path correct?
+
+**Solution 3**: Try different format:
+
+```astro
+<Image
+  src={image}
+  format="jpeg"  <!-- Try jpeg instead of webp -->
+/>
+```
+
+### Q: Markdown/MDX processing errors
+
+**Error**:
+```
+Could not parse frontmatter
+```
+
+**Solution**:
+Check frontmatter syntax:
+
+```markdown
+---
+title: My Post  <!-- No quotes needed for simple strings -->
+description: "Complex: strings need quotes"
+date: 2024-10-27  <!-- Date format: YYYY-MM-DD -->
+tags:
+  - tag1  <!-- Array syntax -->
+  - tag2
+---
+```
+
+### Q: CSS errors during build
+
+**Error**:
+```
+Cannot resolve Tailwind CSS directives
+```
+
+**Solution**:
+Ensure Tailwind is properly configured:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  content: [
+    './src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}',
+  ],
+  // ...
+}
+```
+
+Check global.css imports:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## Content Collection Errors
+
+### Q: Collection not found
+
+**Error**:
+```
+Collection "posts" not found
+```
+
+**Solution**:
+1. Check collection is defined in config:
+
+```typescript
+// src/content/config.ts
+import { defineCollection } from 'astro:content';
+
+const posts = defineCollection({
+  // ...
+});
+
+export const collections = {
+  posts,  // Make sure it's exported
+};
+```
+
+2. Check folder structure:
+
+```
+src/content/posts/  <!-- Must match collection name -->
+```
+
+### Q: Content schema validation errors
+
+**Error**:
+```
+**title**: Required
+```
+
+**Solution**:
+Ensure all required fields are present:
+
+```markdown
+---
+title: My Post  <!-- Required -->
+description: Description  <!-- If required in schema -->
+publishDate: 2024-10-27  <!-- If required in schema -->
+---
+```
+
+## Import Errors
+
+### Q: "Cannot use import statement outside a module"
+
+**Error**:
+```
+SyntaxError: Cannot use import statement outside a module
+```
+
+**Solution**:
+This usually means Node is trying to run ESM code. Check:
+
+```json
+// package.json
+{
+  "type": "module"  // Should be present
+}
+```
+
+### Q: Dynamic import errors
+
+**Error**:
+```
+Dynamic import cannot be used
+```
+
+**Solution**:
+Use proper async/await:
+
+```typescript
+// ❌ Wrong
+const module = import('./module');
+
+// ✓ Correct
+const module = await import('./module');
+```
+
+## DaisyUI/Tailwind Issues
+
+### Q: DaisyUI components not styled
+
+**Problem**: Components have no styling
+
+**Solution**:
+Check DaisyUI is in plugins:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  plugins: [require('daisyui')],
+}
+```
+
+Ensure CSS is imported:
+
+```astro
+<!-- In BaseLayout or global -->
+<style is:global>
+  @import "tailwindcss/base";
+  @import "tailwindcss/components";
+  @import "tailwindcss/utilities";
+</style>
+```
+
+### Q: Themes not working
+
+**Problem**: Theme switching doesn't work
+
+**Solution**:
+1. Check themes are configured:
+
+```javascript
+daisyui: {
+  themes: ['light', 'dark', 'cupcake'],
+}
+```
+
+2. Ensure `data-theme` attribute is set:
+
+```html
+<html data-theme="light">
+```
+
+## Keystatic Issues
+
+### Q: Keystatic not loading
+
+**Error**:
+```
+404 - Not found at /keystatic
+```
+
+**Solution**:
+Ensure Keystatic integration is added:
+
+```javascript
+// astro.config.mjs
+import keystatic from '@keystatic/astro';
+
+export default defineConfig({
+  integrations: [keystatic()],
+  output: 'hybrid',  // or 'server' in dev
+});
+```
+
+### Q: Cannot save content in Keystatic
+
+**Problem**: Save button doesn't work
+
+**Solution**:
+Check storage configuration:
+
+```typescript
+// keystatic.config.tsx
+export default config({
+  storage: {
+    kind: 'local',  // For development
+  },
+  // ...
+});
+```
+
+Ensure proper file permissions in `src/content/`.
+
+## Preview/Production Issues
+
+### Q: Site works in dev but not in production
+
+**Problem**: Build succeeds but site has errors
+
+**Common causes**:
+
+1. **Environment variables**:
+```bash
+# Check PUBLIC_ prefix for client-side vars
+PUBLIC_SITE_URL=https://example.com
+```
+
+2. **Absolute imports**:
+```astro
+<!-- ❌ Might fail in production -->
+import Header from '/src/components/Header.astro';
+
+<!-- ✓ Use alias -->
+import Header from '@/components/Header.astro';
+```
+
+3. **Base path**:
+```javascript
+// astro.config.mjs
+export default defineConfig({
+  site: 'https://username.github.io',
+  base: '/repo-name',  // Add if not at root
+});
+```
+
+### Q: Images not showing in production
+
+**Problem**: Images work locally but 404 in production
+
+**Solution**:
+1. Use `public/` directory for static images:
+```
+public/images/hero.jpg  ✓
+src/images/hero.jpg     ✗ (needs to be imported)
+```
+
+2. Or import and use Image component:
+```astro
+---
+import { Image } from 'astro:assets';
+import hero from '@/images/hero.jpg';
+---
+
+<Image src={hero} alt="Hero" />
+```
+
+## GitHub Actions Issues
+
+### Q: Build fails in GitHub Actions
+
+**Error in workflow logs**:
+```
+npm ERR! code ELIFECYCLE
+```
+
+**Solution**:
+Check workflow Node version matches local:
+
+```yaml
+# .github/workflows/deploy.yml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'  # Match your local version
+```
+
+### Q: Cache issues in CI
+
+**Problem**: Build takes too long
+
+**Solution**:
+Enable caching:
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'  # Add this
+```
+
+## Performance Issues
+
+### Q: Build is very slow
+
+**Problem**: Build takes several minutes
+
+**Solutions**:
+
+1. **Reduce images**:
+```bash
+# Optimize images before adding
+npm install -g sharp-cli
+sharp input.jpg --output output.webp --webp
+```
+
+2. **Limit concurrent builds**:
+```javascript
+// astro.config.mjs
+export default defineConfig({
+  vite: {
+    build: {
+      rollupOptions: {
+        maxParallelFileOps: 20,
+      },
+    },
+  },
+});
+```
+
+3. **Check for circular dependencies**:
+```bash
+npm install -g madge
+madge --circular src/
+```
+
+### Q: Dev server is slow
+
+**Problem**: Hot reload takes long
+
+**Solutions**:
+
+1. **Clear cache**:
+```bash
+rm -rf .astro node_modules/.vite
+npm install
+```
+
+2. **Reduce file watching**:
+```javascript
+// astro.config.mjs
+export default defineConfig({
+  vite: {
+    server: {
+      watch: {
+        ignored: ['**/node_modules/**', '**/.git/**'],
+      },
+    },
+  },
+});
+```
+
+## Getting More Help
+
+### Enable Debug Mode
+
+```bash
+DEBUG=* npm run build
+```
+
+### Check Logs
+
+```bash
+npm run build 2>&1 | tee build.log
+```
+
+### Create Minimal Reproduction
+
+1. Start fresh project
+2. Add minimal code to reproduce
+3. Share on GitHub
+4. Post in discussions
+
+### Useful Commands
+
+```bash
+# Check for issues
+npm run astro check
+
+# Clear all caches
+rm -rf .astro node_modules/.vite dist
+
+# Fresh install
+rm -rf node_modules package-lock.json
+npm install
+
+# Verify build locally
+npm run build && npm run preview
+```
+
+## Still Having Issues?
+
+- Check [Astro Docs](https://docs.astro.build)
+- Visit [AiWeb Discussions](https://github.com)
+- Contact [Support](/contact)
+- Read [Deployment FAQ](/knowledge-base/deployment-troubleshooting-faq)
+
+Most issues have simple solutions! 🔧

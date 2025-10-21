@@ -1,0 +1,699 @@
+---
+title: keystatic-field-types-reference
+description: Complete reference for all Keystatic field types. Learn how to configure each field with examples and best practices.
+category: api-reference
+order: 1
+icon: 📚
+image: /images/kb/keystatic-fields.jpg
+lastUpdated: 2024-10-27
+featured: true
+---
+
+# Keystatic Field Types Reference
+
+Complete reference for all available Keystatic field types with examples and configuration options.
+
+## Text Fields
+
+### fields.text()
+
+Basic single-line text input.
+
+**Configuration**:
+```typescript
+fields.text({
+  label: 'Title',
+  description: 'Enter the article title',
+  defaultValue: '',
+  validation: {
+    length: {
+      min: 3,
+      max: 100,
+    },
+  },
+  multiline: false,
+})
+```
+
+**Options**:
+- `label`: Field label (string)
+- `description`: Help text (string, optional)
+- `defaultValue`: Initial value (string, optional)
+- `validation`: Validation rules (object, optional)
+- `multiline`: Enable textarea (boolean, default: false)
+
+**Example**:
+```typescript
+title: fields.text({
+  label: 'Post Title',
+  validation: { length: { min: 10, max: 60 } },
+})
+```
+
+### fields.slug()
+
+URL-friendly slug field with auto-generation.
+
+**Configuration**:
+```typescript
+fields.slug({
+  name: {
+    label: 'Title',
+    validation: { length: { min: 1 } },
+  },
+  slug: {
+    label: 'URL Slug',
+    description: 'Auto-generated from title',
+  },
+})
+```
+
+**Usage**:
+```typescript
+title: fields.slug({
+  name: { label: 'Post Title' },
+})
+```
+
+## Numeric Fields
+
+### fields.number()
+
+Integer or decimal number input.
+
+**Configuration**:
+```typescript
+fields.number({
+  label: 'Order',
+  description: 'Display order (lower numbers first)',
+  defaultValue: 0,
+  validation: {
+    min: 0,
+    max: 1000,
+    isRequired: true,
+  },
+})
+```
+
+**Example**:
+```typescript
+price: fields.number({
+  label: 'Price ($)',
+  defaultValue: 0,
+  validation: { min: 0 },
+})
+```
+
+## Boolean Fields
+
+### fields.checkbox()
+
+True/false checkbox input.
+
+**Configuration**:
+```typescript
+fields.checkbox({
+  label: 'Published',
+  description: 'Make this post visible to the public',
+  defaultValue: false,
+})
+```
+
+**Example**:
+```typescript
+featured: fields.checkbox({
+  label: 'Featured Post',
+  defaultValue: false,
+})
+
+draft: fields.checkbox({
+  label: 'Draft',
+  defaultValue: true,
+})
+```
+
+## Date & Time Fields
+
+### fields.date()
+
+Date picker field.
+
+**Configuration**:
+```typescript
+fields.date({
+  label: 'Publish Date',
+  description: 'When to publish this post',
+  defaultValue: { kind: 'today' }, // or specific date
+  validation: {
+    isRequired: true,
+  },
+})
+```
+
+**Default Value Options**:
+```typescript
+// Today's date
+{ kind: 'today' }
+
+// Specific date
+{ kind: 'date', value: '2024-10-27' }
+```
+
+**Example**:
+```typescript
+publishDate: fields.date({
+  label: 'Publish Date',
+  defaultValue: { kind: 'today' },
+})
+
+lastUpdated: fields.date({
+  label: 'Last Updated',
+})
+```
+
+### fields.datetime()
+
+Date and time picker.
+
+**Configuration**:
+```typescript
+fields.datetime({
+  label: 'Event Start',
+  defaultValue: { kind: 'now' },
+})
+```
+
+## Selection Fields
+
+### fields.select()
+
+Dropdown selection field.
+
+**Configuration**:
+```typescript
+fields.select({
+  label: 'Category',
+  description: 'Select a category',
+  options: [
+    { label: 'Getting Started', value: 'getting-started' },
+    { label: 'Guides', value: 'guides' },
+    { label: 'Tutorials', value: 'tutorials' },
+  ],
+  defaultValue: 'getting-started',
+})
+```
+
+**Example**:
+```typescript
+status: fields.select({
+  label: 'Status',
+  options: [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Published', value: 'published' },
+    { label: 'Archived', value: 'archived' },
+  ],
+  defaultValue: 'draft',
+})
+```
+
+### fields.multiselect()
+
+Multiple selection field.
+
+**Configuration**:
+```typescript
+fields.multiselect({
+  label: 'Tags',
+  options: [
+    { label: 'Tutorial', value: 'tutorial' },
+    { label: 'Guide', value: 'guide' },
+    { label: 'Reference', value: 'reference' },
+  ],
+  defaultValue: [],
+})
+```
+
+## Array Fields
+
+### fields.array()
+
+Repeating field group.
+
+**Configuration**:
+```typescript
+fields.array(
+  fields.text({ label: 'Tag' }),
+  {
+    label: 'Tags',
+    itemLabel: (props) => props.value || 'New Tag',
+    validation: {
+      length: { min: 1, max: 5 },
+    },
+  }
+)
+```
+
+**Example**:
+```typescript
+tags: fields.array(
+  fields.text({ label: 'Tag' }),
+  {
+    label: 'Tags',
+    itemLabel: (props) => props.value,
+  }
+)
+
+features: fields.array(
+  fields.object({
+    title: fields.text({ label: 'Feature Title' }),
+    description: fields.text({
+      label: 'Description',
+      multiline: true,
+    }),
+  }),
+  {
+    label: 'Features',
+    itemLabel: (props) => props.fields.title.value,
+  }
+)
+```
+
+## Object Fields
+
+### fields.object()
+
+Group of related fields.
+
+**Configuration**:
+```typescript
+fields.object({
+  name: fields.text({ label: 'Name' }),
+  email: fields.text({ label: 'Email' }),
+  bio: fields.text({
+    label: 'Bio',
+    multiline: true,
+  }),
+})
+```
+
+**Example**:
+```typescript
+author: fields.object({
+  name: fields.text({ label: 'Name' }),
+  email: fields.text({ label: 'Email' }),
+  avatar: fields.image({
+    label: 'Avatar',
+    directory: 'public/images/authors',
+    publicPath: '/images/authors/',
+  }),
+  social: fields.object({
+    twitter: fields.text({ label: 'Twitter Handle' }),
+    github: fields.text({ label: 'GitHub Username' }),
+  }),
+})
+```
+
+## Content Fields
+
+### fields.document()
+
+Rich text editor with markdown.
+
+**Configuration**:
+```typescript
+fields.document({
+  label: 'Content',
+  description: 'Main article content',
+  formatting: true,
+  dividers: true,
+  links: true,
+  images: true,
+  tables: true,
+  layouts: [
+    [1],
+    [1, 1],
+    [1, 2],
+  ],
+})
+```
+
+**Options**:
+- `formatting`: Enable bold, italic, code, etc.
+- `dividers`: Enable horizontal rules
+- `links`: Enable link insertion
+- `images`: Enable image uploads
+- `tables`: Enable table creation
+- `layouts`: Column layout options
+
+**Example**:
+```typescript
+content: fields.document({
+  label: 'Post Content',
+  formatting: true,
+  links: true,
+  images: {
+    directory: 'public/images/posts',
+    publicPath: '/images/posts/',
+  },
+})
+```
+
+## Media Fields
+
+### fields.image()
+
+Image upload and management.
+
+**Configuration**:
+```typescript
+fields.image({
+  label: 'Featured Image',
+  description: 'Recommended: 1200x630px',
+  directory: 'public/images/posts',
+  publicPath: '/images/posts/',
+  validation: {
+    isRequired: true,
+  },
+})
+```
+
+**Example**:
+```typescript
+featuredImage: fields.image({
+  label: 'Hero Image',
+  directory: 'public/images/heroes',
+  publicPath: '/images/heroes/',
+})
+
+thumbnail: fields.image({
+  label: 'Thumbnail',
+  directory: 'public/images/thumbnails',
+  publicPath: '/images/thumbnails/',
+})
+```
+
+### fields.file()
+
+File upload field.
+
+**Configuration**:
+```typescript
+fields.file({
+  label: 'PDF Download',
+  directory: 'public/downloads',
+  publicPath: '/downloads/',
+})
+```
+
+## Relationship Fields
+
+### fields.relationship()
+
+Link to another collection entry.
+
+**Configuration**:
+```typescript
+fields.relationship({
+  label: 'Author',
+  collection: 'authors',
+  validation: {
+    isRequired: true,
+  },
+})
+```
+
+**Example**:
+```typescript
+author: fields.relationship({
+  label: 'Post Author',
+  collection: 'authors',
+})
+
+relatedPosts: fields.array(
+  fields.relationship({
+    label: 'Related Post',
+    collection: 'posts',
+  }),
+  {
+    label: 'Related Posts',
+    itemLabel: (props) => props.value || 'Select post',
+  }
+)
+```
+
+## Conditional Fields
+
+### fields.conditional()
+
+Show/hide fields based on another field's value.
+
+**Configuration**:
+```typescript
+fields.conditional(
+  fields.checkbox({ label: 'Enable Custom URL' }),
+  {
+    true: fields.text({
+      label: 'Custom URL',
+      validation: { isRequired: true },
+    }),
+    false: fields.empty(),
+  }
+)
+```
+
+**Example**:
+```typescript
+customExcerpt: fields.conditional(
+  fields.checkbox({ label: 'Use Custom Excerpt' }),
+  {
+    true: fields.text({
+      label: 'Excerpt',
+      multiline: true,
+      validation: { length: { max: 200 } },
+    }),
+    false: fields.empty(),
+  }
+)
+```
+
+## URL Fields
+
+### fields.url()
+
+URL input with validation.
+
+**Configuration**:
+```typescript
+fields.url({
+  label: 'Website',
+  description: 'Enter full URL including https://',
+  validation: {
+    isRequired: false,
+  },
+})
+```
+
+**Example**:
+```typescript
+website: fields.url({
+  label: 'Company Website',
+})
+
+sourceUrl: fields.url({
+  label: 'Source URL',
+  description: 'Original article URL',
+})
+```
+
+## Empty Field
+
+### fields.empty()
+
+Placeholder for conditional fields.
+
+**Usage**:
+```typescript
+fields.conditional(
+  fields.checkbox({ label: 'Enable Feature' }),
+  {
+    true: fields.text({ label: 'Feature Name' }),
+    false: fields.empty(), // Shows nothing when unchecked
+  }
+)
+```
+
+## Common Patterns
+
+### SEO Fields
+
+```typescript
+const seoFields = {
+  metaTitle: fields.text({
+    label: 'SEO Title',
+    description: 'Recommended: 50-60 characters',
+    validation: { length: { max: 60 } },
+  }),
+  metaDescription: fields.text({
+    label: 'SEO Description',
+    multiline: true,
+    description: 'Recommended: 150-160 characters',
+    validation: {
+      length: { min: 50, max: 160 },
+    },
+  }),
+  ogImage: fields.image({
+    label: 'Social Share Image',
+    description: 'Recommended: 1200x630px',
+    directory: 'public/images/og',
+    publicPath: '/images/og/',
+  }),
+};
+```
+
+### Author Fields
+
+```typescript
+const authorFields = fields.object({
+  name: fields.text({ label: 'Name' }),
+  email: fields.text({ label: 'Email' }),
+  bio: fields.text({
+    label: 'Bio',
+    multiline: true,
+    validation: { length: { max: 200 } },
+  }),
+  avatar: fields.image({
+    label: 'Avatar',
+    directory: 'public/images/authors',
+    publicPath: '/images/authors/',
+  }),
+  social: fields.object({
+    twitter: fields.url({ label: 'Twitter URL' }),
+    github: fields.url({ label: 'GitHub URL' }),
+    website: fields.url({ label: 'Website' }),
+  }),
+})
+```
+
+### Location Fields
+
+```typescript
+const locationFields = fields.object({
+  address: fields.text({ label: 'Street Address' }),
+  city: fields.text({ label: 'City' }),
+  state: fields.select({
+    label: 'State',
+    options: [/* state options */],
+  }),
+  zipCode: fields.text({
+    label: 'ZIP Code',
+    validation: { length: { min: 5, max: 10 } },
+  }),
+  coordinates: fields.object({
+    lat: fields.number({ label: 'Latitude' }),
+    lng: fields.number({ label: 'Longitude' }),
+  }),
+})
+```
+
+## Validation
+
+### Common Validation Rules
+
+```typescript
+// Required field
+validation: {
+  isRequired: true,
+}
+
+// Length validation
+validation: {
+  length: {
+    min: 10,
+    max: 100,
+  },
+}
+
+// Number range
+validation: {
+  min: 0,
+  max: 100,
+}
+
+// Pattern matching (text fields)
+validation: {
+  pattern: {
+    regex: '^[a-z0-9-]+$',
+    message: 'Only lowercase letters, numbers, and hyphens',
+  },
+}
+```
+
+## Best Practices
+
+### Field Organization
+
+```typescript
+{
+  // Basic info first
+  title: fields.slug({ /* ... */ }),
+  description: fields.text({ /* ... */ }),
+
+  // Content
+  content: fields.document({ /* ... */ }),
+
+  // Metadata
+  publishDate: fields.date({ /* ... */ }),
+  author: fields.relationship({ /* ... */ }),
+
+  // Settings last
+  featured: fields.checkbox({ /* ... */ }),
+  draft: fields.checkbox({ /* ... */ }),
+}
+```
+
+### Helpful Descriptions
+
+```typescript
+fields.text({
+  label: 'Meta Description',
+  description: 'Used for SEO and social sharing. Keep under 160 characters.',
+  validation: { length: { max: 160 } },
+})
+```
+
+### Sensible Defaults
+
+```typescript
+fields.checkbox({
+  label: 'Draft',
+  defaultValue: true, // New posts start as drafts
+})
+
+fields.date({
+  label: 'Publish Date',
+  defaultValue: { kind: 'today' },
+})
+```
+
+## TypeScript Types
+
+Keystatic generates TypeScript types automatically:
+
+```typescript
+import type { Entry } from '@keystatic/core';
+import config from '../keystatic.config';
+
+type Post = Entry<(typeof config)['collections']['posts']>;
+
+// Use in your code
+const post: Post = await getEntry('posts', slug);
+post.data.title; // Type-safe!
+```
+
+## Next Steps
+
+- [Read Keystatic CMS Deep Dive](/blog/keystatic-cms-deep-dive)
+- [Learn Component Props](/knowledge-base/component-props-reference)
+- [Explore Configuration Guide](/knowledge-base/configuration-best-practices)
+
+Master your content schema! 📚

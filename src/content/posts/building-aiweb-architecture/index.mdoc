@@ -1,0 +1,383 @@
+---
+title: Building AiWeb - Project Architecture and Design Decisions
+description: A deep dive into the architecture of AiWeb, exploring the technologies, design patterns, and decisions that power this modern static site generator.
+publishDate: 2024-10-22
+author: AiWeb Team
+image: /images/posts/architecture.jpg
+tags:
+  - Architecture
+  - Astro
+  - Web Development
+  - Design Patterns
+featured: true
+draft: false
+---
+
+# Building AiWeb: Project Architecture and Design Decisions
+
+When we set out to build AiWeb, we had a clear vision: create a modern, performant, and developer-friendly platform for building beautiful websites. This post explores the architectural decisions, technology choices, and design patterns that make AiWeb what it is today.
+
+## The Vision
+
+We wanted to build a platform that combines:
+
+- **Performance**: Lightning-fast page loads and perfect Lighthouse scores
+- **Developer Experience**: Intuitive tools and workflows
+- **Content Management**: Simple yet powerful content editing
+- **Flexibility**: Easy customization and extensibility
+- **Modern Stack**: Cutting-edge technologies without unnecessary complexity
+
+## Technology Stack Overview
+
+### Core Framework: Astro 4.16.7
+
+The foundation of AiWeb is Astro, and this choice was deliberate. Here's why:
+
+**Zero JavaScript by Default**: Astro's approach of shipping zero client-side JavaScript by default aligns perfectly with our performance goals. JavaScript is only added when needed through component islands.
+
+**Framework Agnostic**: While we use React for interactive components, Astro allows us to mix and match frameworks. This gives developers flexibility while maintaining consistency.
+
+**Static-First with Dynamic Capabilities**: Astro generates static HTML at build time, perfect for blogs and content sites, while supporting dynamic features when needed.
+
+```typescript
+// Example: Mixing static and dynamic content
+---
+import { getCollection } from 'astro:content';
+const posts = await getCollection('posts');
+---
+
+<div>
+  {posts.map(post => (
+    <article>{post.data.title}</article>
+  ))}
+</div>
+```
+
+### Styling: Tailwind CSS + DaisyUI
+
+For styling, we chose a combination that provides both power and convenience:
+
+**Tailwind CSS 3.4.14**: Utility-first CSS framework that enables rapid development without context switching. No more jumping between HTML and CSS files.
+
+**DaisyUI 4.12.14**: Component library built on Tailwind that provides 30+ beautiful themes. This gives users instant visual variety without custom CSS.
+
+The combination allows for:
+- Rapid prototyping with utility classes
+- Consistent design system through DaisyUI components
+- Easy customization through Tailwind's configuration
+- Theme switching without rebuilding styles
+
+### Content Management: Keystatic CMS
+
+One of our most important decisions was choosing Keystatic for content management:
+
+**Git-Based**: Content lives in Git alongside code, enabling version control, branching, and collaboration.
+
+**Local-First**: No external databases or services required. Everything works offline and deploys as static files.
+
+**Type-Safe**: Keystatic generates TypeScript types for your content schemas, catching errors at compile time.
+
+**Developer-Friendly**: Edit content in a visual editor or directly in markdown files. Both workflows are supported.
+
+```typescript
+// Keystatic configuration example
+collections: {
+  posts: collection({
+    label: 'Blog Posts',
+    path: 'src/content/posts/*/',
+    slugField: 'title',
+    format: { contentField: 'content' },
+    schema: {
+      title: fields.slug({ name: { label: 'Title' } }),
+      description: fields.text({ label: 'Description' }),
+      content: fields.document({
+        label: 'Content',
+        formatting: true,
+        links: true,
+      }),
+    },
+  }),
+}
+```
+
+## Architecture Patterns
+
+### File-Based Routing
+
+AiWeb follows Astro's file-based routing convention:
+
+```
+src/pages/
+├── index.astro          → /
+├── about.astro          → /about
+├── blog/
+│   ├── index.astro      → /blog
+│   └── [slug].astro     → /blog/:slug
+└── api/
+    └── posts.json.ts    → /api/posts.json
+```
+
+This convention makes the site structure immediately clear and removes routing configuration overhead.
+
+### Content Collections
+
+We organize content into three main collections:
+
+1. **Posts**: Blog articles with publication dates, authors, and tags
+2. **Knowledge Base**: Documentation organized by categories
+3. **Pages**: Custom pages for flexible content
+
+Each collection has its own schema, ensuring content consistency:
+
+```typescript
+const postsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    publishDate: z.date(),
+    author: z.string(),
+    featured: z.boolean().default(false),
+  }),
+});
+```
+
+### Component Architecture
+
+Our component structure follows a clear hierarchy:
+
+**Layouts**: High-level page templates (`BaseLayout.astro`)
+**UI Components**: Reusable building blocks (`Button`, `Card`, `Hero`)
+**Interactive Components**: React components for dynamic behavior (`ThemeSwitcher`)
+
+This separation ensures:
+- Easy maintenance and updates
+- Consistent UI across the site
+- Clear boundaries between static and dynamic content
+
+### SEO Strategy
+
+SEO is built into the architecture, not bolted on:
+
+```astro
+<!-- SEO component with automatic meta tags -->
+<SEO
+  title={title}
+  description={description}
+  image={image}
+  canonical={Astro.url}
+/>
+```
+
+Every page automatically gets:
+- Proper meta tags (title, description)
+- Open Graph tags for social sharing
+- Twitter Card metadata
+- Canonical URLs to prevent duplicate content
+- Structured data when applicable
+
+## Performance Optimizations
+
+### Image Optimization
+
+We use Sharp for automatic image processing:
+
+```astro
+<Image
+  src={post.data.image}
+  alt={post.data.title}
+  width={800}
+  height={400}
+  format="webp"
+  loading="lazy"
+/>
+```
+
+Benefits:
+- Automatic WebP conversion
+- Responsive image generation
+- Lazy loading by default
+- Optimized file sizes
+
+### Code Splitting
+
+Astro automatically code-splits JavaScript:
+
+```astro
+<!-- Only loads React runtime when needed -->
+<ThemeSwitcher client:load />
+```
+
+Directives like `client:load`, `client:visible`, and `client:idle` give fine-grained control over when JavaScript loads.
+
+### CSS Optimization
+
+Tailwind's JIT compiler and PurgeCSS integration ensure we only ship CSS that's actually used:
+
+```javascript
+// tailwind.config.mjs
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  // Only used classes are included in production builds
+}
+```
+
+## Deployment Architecture
+
+### CI/CD Pipeline
+
+We use GitHub Actions for automated deployment:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+```
+
+Features:
+- Automatic deployment on push to main
+- Manual deployment option
+- Build validation on all branches
+- Zero-downtime deployments
+
+### Static Hosting
+
+GitHub Pages hosts our static site with:
+- Global CDN for fast access worldwide
+- Automatic SSL certificates
+- Custom domain support
+- Version history through Git
+
+## Security Considerations
+
+### Content Security
+
+Since content is stored in Git:
+- All changes are tracked and auditable
+- Easy rollback if needed
+- Branch protection prevents unauthorized changes
+- Content review through pull requests
+
+### Build-Time Rendering
+
+Static site generation provides inherent security benefits:
+- No server-side vulnerabilities
+- No database to compromise
+- No authentication to hack
+- Reduced attack surface
+
+## Scalability
+
+### Build Performance
+
+Astro's architecture enables fast builds:
+- Parallel processing of pages
+- Incremental builds (only rebuild what changed)
+- Efficient asset pipeline
+
+Our typical build times:
+- Small site (10 pages): ~5 seconds
+- Medium site (100 pages): ~20 seconds
+- Large site (1000+ pages): ~2 minutes
+
+### Content Scalability
+
+The content collection system scales well:
+- Efficient querying and filtering
+- Lazy loading of content
+- Automatic indexing
+- Memory-efficient processing
+
+## Development Workflow
+
+### Local Development
+
+```bash
+# Start development server with hot reload
+npm run dev
+
+# Access Keystatic CMS
+http://localhost:4321/keystatic
+
+# Preview production build
+npm run preview
+```
+
+### Content Creation
+
+Two workflows supported:
+
+1. **Visual Editor**: Use Keystatic at `/keystatic` for WYSIWYG editing
+2. **Direct Editing**: Edit `.mdoc` files directly in your preferred editor
+
+Both maintain content consistency through TypeScript schemas.
+
+## Lessons Learned
+
+### What Worked Well
+
+1. **Astro's Performance**: Zero-JavaScript default delivers on performance promises
+2. **DaisyUI Themes**: Users love the instant theme variety
+3. **Git-Based CMS**: Keystatic's approach eliminates deployment complexity
+4. **Type Safety**: TypeScript catches issues before they reach production
+
+### Challenges Overcome
+
+1. **Image Optimization**: Sharp configuration required fine-tuning for optimal results
+2. **Theme Persistence**: Implementing theme switching with SSR required client-side hydration
+3. **Build Caching**: GitHub Actions cache configuration needed optimization
+4. **Content Schema Evolution**: Planning for schema changes without breaking existing content
+
+## Future Architecture Plans
+
+### Planned Enhancements
+
+1. **Internationalization**: Multi-language support using Astro's i18n features
+2. **Search Functionality**: Client-side search with Pagefind or Algolia
+3. **Comments System**: Integration with comment platforms
+4. **Analytics Dashboard**: Built-in analytics visualization
+5. **Plugin System**: Extensible architecture for community contributions
+
+### Performance Targets
+
+We're already fast, but aiming higher:
+- Sub-1-second First Contentful Paint
+- 100/100 Lighthouse scores across all metrics
+- Under 50KB initial bundle size
+- Perfect Core Web Vitals scores
+
+## Conclusion
+
+Building AiWeb taught us that modern web development doesn't have to be complex. By choosing the right tools and following solid architectural principles, we created a platform that's both powerful and approachable.
+
+Key takeaways:
+- Choose technologies that align with your goals
+- Performance should be built-in, not added later
+- Developer experience directly impacts product quality
+- Static-first architecture has unique advantages
+
+The architecture decisions we made early on continue to serve us well as the project grows. By prioritizing performance, maintainability, and developer experience, we created a foundation that scales.
+
+## Resources
+
+- [Astro Documentation](https://docs.astro.build)
+- [AiWeb GitHub Repository](https://github.com)
+- [Keystatic Documentation](https://keystatic.com/docs)
+- [Performance Best Practices](/knowledge-base/performance-optimization-checklist)
+
+Ready to explore AiWeb yourself? Check out our [Quick Start Guide](/knowledge-base/quick-start-guide) to get up and running in minutes!
