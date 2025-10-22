@@ -4,6 +4,8 @@ import Card from '@/components/ui/Card.astro';
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../../keystatic.config';
 
+const base = import.meta.env.BASE_URL;
+
 const reader = createReader(process.cwd(), keystaticConfig);
 const articles = await reader.collections.knowledgeBase.all();
 
@@ -62,7 +64,7 @@ const featuredArticles = sortedArticles.filter(article => article.entry.featured
             <Card
               title={article.entry.title}
               description={article.entry.description}
-              href={`/knowledge-base/${article.slug}`}
+              href={`${base}knowledge-base/${article.slug}`}
               hover={true}
             >
               <div class="flex items-center gap-2 mt-4">
@@ -94,7 +96,7 @@ const featuredArticles = sortedArticles.filter(article => article.entry.featured
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categoryArticles.map((article) => (
                   <a
-                    href={`/knowledge-base/${article.slug}`}
+                    href={`${base}knowledge-base/${article.slug}`}
                     class="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow border border-base-300 card-hover"
                   >
                     <div class="card-body">
@@ -127,7 +129,7 @@ const featuredArticles = sortedArticles.filter(article => article.entry.featured
           <p class="text-lg mb-6 max-w-2xl opacity-90">
             Our support team is here to help you. Get in touch and we'll get back to you as soon as possible.
           </p>
-          <a href="/contact" class="btn btn-accent btn-lg">
+          <a href={`${base}contact`} class="btn btn-accent btn-lg">
             Contact Support
           </a>
         </div>

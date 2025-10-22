@@ -20,6 +20,7 @@ const { post } = Astro.props;
 const { title, description, publishDate, author, image, tags } = post.entry;
 const content = await post.entry.content();
 const renderedContent = Markdoc.renderers.html(Markdoc.transform(content.node));
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
@@ -37,8 +38,8 @@ const renderedContent = Markdoc.renderers.html(Markdoc.transform(content.node));
       <header class="mb-12">
         <div class="breadcrumbs text-sm mb-6">
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/blog">Blog</a></li>
+            <li><a href={base}>Home</a></li>
+            <li><a href={`${base}blog`}>Blog</a></li>
             <li>{title}</li>
           </ul>
         </div>
@@ -99,7 +100,7 @@ const renderedContent = Markdoc.renderers.html(Markdoc.transform(content.node));
       <!-- Article Footer -->
       <footer class="mt-16 pt-8 border-t border-base-300">
         <div class="flex justify-between items-center">
-          <a href="/blog" class="btn btn-outline btn-primary">
+          <a href={`${base}blog`} class="btn btn-outline btn-primary">
             ← Back to Blog
           </a>
           <div class="flex gap-2">

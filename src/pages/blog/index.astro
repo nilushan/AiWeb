@@ -4,6 +4,8 @@ import Card from '@/components/ui/Card.astro';
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../../keystatic.config';
 
+const base = import.meta.env.BASE_URL;
+
 const reader = createReader(process.cwd(), keystaticConfig);
 const posts = await reader.collections.posts.all();
 
@@ -48,7 +50,7 @@ const regularPosts = sortedPosts.filter(post => !post.entry.featured);
               description={post.entry.description}
               image={post.entry.image || '/images/placeholder.jpg'}
               imageAlt={post.entry.title}
-              href={`/blog/${post.slug}`}
+              href={`${base}blog/${post.slug}`}
               hover={true}
             >
               <div class="flex flex-wrap gap-2 mt-4">
@@ -83,7 +85,7 @@ const regularPosts = sortedPosts.filter(post => !post.entry.featured);
               description={post.entry.description}
               image={post.entry.image || '/images/placeholder.jpg'}
               imageAlt={post.entry.title}
-              href={`/blog/${post.slug}`}
+              href={`${base}blog/${post.slug}`}
               hover={true}
             >
               <div class="flex flex-wrap gap-2 mt-4">

@@ -4,6 +4,8 @@ import Hero from '@/components/ui/Hero.astro';
 import Feature from '@/components/ui/Feature.astro';
 import Button from '@/components/ui/Button.astro';
 
+const base = import.meta.env.BASE_URL;
+
 const features = [
   {
     icon: '⚡',
@@ -54,10 +56,10 @@ const features = [
     subtitle="A modern web platform powered by Astro, DaisyUI, and Keystatic CMS"
   >
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <Button href="/blog" variant="primary" size="lg" wide>
+      <Button href={`${base}blog`} variant="primary" size="lg" wide>
         Get Started
       </Button>
-      <Button href="/knowledge-base" variant="secondary" size="lg" wide outline>
+      <Button href={`${base}knowledge-base`} variant="secondary" size="lg" wide outline>
         Learn More
       </Button>
     </div>
@@ -97,10 +99,10 @@ const features = [
             Join thousands of developers building amazing websites with our modern tech stack
           </p>
           <div class="flex flex-col sm:flex-row gap-4">
-            <Button href="/blog" variant="accent" size="lg" wide>
+            <Button href={`${base}blog`} variant="accent" size="lg" wide>
               View Blog
             </Button>
-            <Button href="/knowledge-base" variant="ghost" size="lg" wide class="bg-white/20 hover:bg-white/30">
+            <Button href={`${base}knowledge-base`} variant="ghost" size="lg" wide class="bg-white/20 hover:bg-white/30">
               Browse Docs
             </Button>
           </div>

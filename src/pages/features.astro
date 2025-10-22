@@ -3,6 +3,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/ui/Hero.astro';
 import Feature from '@/components/ui/Feature.astro';
 
+const base = import.meta.env.BASE_URL;
+
 const coreFeatures = [
   {
     icon: '⚡',
@@ -220,10 +222,10 @@ const technicalFeatures = [
             Experience all these features and more. Start building your next project with AiWeb today.
           </p>
           <div class="flex flex-wrap gap-4 justify-center">
-            <a href="/knowledge-base" class="btn btn-accent btn-lg">
+            <a href={`${base}knowledge-base`} class="btn btn-accent btn-lg">
               Read Documentation
             </a>
-            <a href="/blog" class="btn btn-outline btn-accent btn-lg">
+            <a href={`${base}blog`} class="btn btn-outline btn-accent btn-lg">
               View Tutorials
             </a>
           </div>
