@@ -265,8 +265,11 @@ concurrency:
 2. **Missing environment variables**:
 ```yaml
 env:
-  PUBLIC_SITE_URL: https://yourdomain.com
-  # Add all required PUBLIC_ vars
+  SITE_URL: https://yourdomain.com
+  BASE_PATH: /your-repo
+  NODE_ENV: production
+  CI: true
+  # Add other required vars as needed
 ```
 
 3. **Case-sensitive imports**:
