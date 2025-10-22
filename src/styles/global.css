@@ -103,11 +103,56 @@
 }
 
 .prose pre {
-  @apply mockup-code;
+  @apply mockup-code overflow-x-auto;
+  max-width: 100%;
+}
+
+/* Ensure code blocks don't break mobile layout */
+@media (max-width: 768px) {
+  .prose pre {
+    @apply text-xs;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .prose pre code {
+    @apply text-xs;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
+  /* Prevent tables from breaking layout on mobile */
+  .prose table {
+    @apply block overflow-x-auto;
+    max-width: calc(100vw - 2rem);
+  }
+
+  /* Ensure headings don't overflow */
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Handle long URLs and inline code */
+  .prose a,
+  .prose code {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 }
 
 .prose code {
   @apply badge badge-neutral font-mono text-sm;
+}
+
+.prose pre code {
+  @apply badge-ghost p-0;
+  white-space: pre;
+  word-break: normal;
 }
 
 .prose blockquote {
