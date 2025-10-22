@@ -64,8 +64,8 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
         env:
           # Use the Pages URL from the configure-pages action (if available)
-          SITE_URL: ${{ steps.pages.outputs.origin || 'https://nilushan.github.io' }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path || '/AiWeb' }}
+          SITE_URL: ${{ env.SITE_URL}}
+          BASE_PATH: ${{ env.BASE_PATH }}
           NODE_ENV: production
           CI: true
 
