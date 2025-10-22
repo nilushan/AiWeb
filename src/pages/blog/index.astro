@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Card from '@/components/ui/Card.astro';
 import { getCollection } from 'astro:content';
 
+const baseUrl = import.meta.env.BASE_URL;
 const posts = await getCollection('posts');
 
 // Sort posts by date (newest first) and filter out drafts
@@ -46,7 +47,7 @@ const regularPosts = sortedPosts.filter(post => !post.data.featured);
               description={post.data.description}
               image={post.data.image || '/images/placeholder.jpg'}
               imageAlt={post.data.title}
-              href={`${import.meta.env.BASE_URL}/blog/${post.slug}`}
+              href={`${baseUrl}blog/${post.slug}`}
               hover={true}
             >
               <div class="flex flex-wrap gap-2 mt-4">
@@ -81,7 +82,7 @@ const regularPosts = sortedPosts.filter(post => !post.data.featured);
               description={post.data.description}
               image={post.data.image || '/images/placeholder.jpg'}
               imageAlt={post.data.title}
-              href={`${import.meta.env.BASE_URL}/blog/${post.slug}`}
+              href={`${baseUrl}blog/${post.slug}`}
               hover={true}
             >
               <div class="flex flex-wrap gap-2 mt-4">
