@@ -59,7 +59,7 @@ const categories = {
                   </div>
                 </div>
                 <div class="divider my-2"></div>
-                <a href={`${import.meta.env.BASE_URL}knowledge-base`} class="btn btn-sm btn-outline btn-block">
+                <a href={`${import.meta.env.BASE_URL}/knowledge-base`} class="btn btn-sm btn-outline btn-block">
                   ← All Articles
                 </a>
               </div>
@@ -72,9 +72,9 @@ const categories = {
           <header class="mb-12">
             <div class="breadcrumbs text-sm mb-6">
               <ul>
-                <li><a href={import.meta.env.BASE_URL}>Home</a></li>
-                <li><a href={`${import.meta.env.BASE_URL}knowledge-base`}>Knowledge Base</a></li>
-                <li><a href={`${import.meta.env.BASE_URL}knowledge-base?category=${category}`}>{categories[category as keyof typeof categories]}</a></li>
+                <li><a href={`${import.meta.env.BASE_URL}/`}>Home</a></li>
+                <li><a href={`${import.meta.env.BASE_URL}/knowledge-base`}>Knowledge Base</a></li>
+                <li><a href={`${import.meta.env.BASE_URL}/knowledge-base?category=${category}`}>{categories[category as keyof typeof categories]}</a></li>
                 <li>{title}</li>
               </ul>
             </div>
