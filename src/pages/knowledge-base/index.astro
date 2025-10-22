@@ -1,14 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Card from '@/components/ui/Card.astro';
-import { createReader } from '@keystatic/core/reader';
-import keystaticConfig from '../../../keystatic.config';
+import { getCollection } from 'astro:content';
 
-const reader = createReader(process.cwd(), keystaticConfig);
-const articles = await reader.collections.knowledgeBase.all();
+const articles = await getCollection('knowledge-base');
 
 // Sort by order and group by category
-const sortedArticles = articles.sort((a, b) => (a.entry.order || 0) - (b.entry.order || 0));
+const sortedArticles = articles.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
 
 const categories = {
   'getting-started': 'Getting Started',
@@ -19,11 +17,11 @@ const categories = {
 };
 
 const articlesByCategory = Object.keys(categories).reduce((acc, key) => {
-  acc[key] = sortedArticles.filter(article => article.entry.category === key);
+  acc[key] = sortedArticles.filter(article => article.data.category === key);
   return acc;
 }, {} as Record<string, typeof sortedArticles>);
 
-const featuredArticles = sortedArticles.filter(article => article.entry.featured).slice(0, 6);
+const featuredArticles = sortedArticles.filter(article => article.data.featured).slice(0, 6);
 ---
 
 <BaseLayout
@@ -60,14 +58,14 @@ const featuredArticles = sortedArticles.filter(article => article.entry.featured
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredArticles.map((article) => (
             <Card
-              title={article.entry.title}
-              description={article.entry.description}
+              title={article.data.title}
+              description={article.data.description}
               href={`${import.meta.env.BASE_URL}knowledge-base/${article.slug}`}
               hover={true}
             >
               <div class="flex items-center gap-2 mt-4">
-                <span class="text-2xl">{article.entry.icon}</span>
-                <span class="badge badge-outline">{categories[article.entry.category as keyof typeof categories]}</span>
+                <span class="text-2xl">{article.data.icon}</span>
+                <span class="badge badge-outline">{categories[article.data.category as keyof typeof categories]}</span>
               </div>
             </Card>
           ))}
@@ -88,7 +86,7 @@ const featuredArticles = sortedArticles.filter(article => article.entry.featured
           return (
             <div>
               <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                {categoryArticles[0]?.entry.icon || '📄'}
+                {categoryArticles[0]?.data.icon || '📄'}
                 {label}
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -98,12 +96,12 @@ const featuredArticles = sortedArticles.filter(article => article.entry.featured
                     class="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow border border-base-300 card-hover"
                   >
                     <div class="card-body">
-                      <h4 class="card-title text-lg">{article.entry.title}</h4>
+                      <h4 class="card-title text-lg">{article.data.title}</h4>
                       <p class="text-sm text-base-content/70 line-clamp-2">
-                        {article.entry.description}
+                        {article.data.description}
                       </p>
                       <div class="text-xs text-base-content/60 mt-2">
-                        {article.entry.lastUpdated && `Updated: ${new Date(article.entry.lastUpdated).toLocaleDateString()}`}
+                        {article.data.lastUpdated && `Updated: ${article.data.lastUpdated.toLocaleDateString()}`}
                       </div>
                     </div>
                   </a>
