@@ -12,7 +12,7 @@ const isProduction = process.env.CI === 'true' || process.env.NODE_ENV === 'prod
 // GitHub Pages configuration
 // Update these values based on your repository
 const site = process.env.SITE_URL || 'https://nilushan.github.io';
-const base = process.env.BASE_PATH || '/AiWeb';
+const base = process.env.BASE_PATH || '/AiWeb/';
 
 // https://astro.build/config
 export default defineConfig({
