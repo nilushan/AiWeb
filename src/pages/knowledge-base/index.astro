@@ -60,7 +60,7 @@ const featuredArticles = sortedArticles.filter(article => article.data.featured)
             <Card
               title={article.data.title}
               description={article.data.description}
-              href={`${import.meta.env.BASE_URL}knowledge-base/${article.slug}`}
+              href={`${import.meta.env.BASE_URL}/knowledge-base/${article.slug}`}
               hover={true}
             >
               <div class="flex items-center gap-2 mt-4">
@@ -92,7 +92,7 @@ const featuredArticles = sortedArticles.filter(article => article.data.featured)
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categoryArticles.map((article) => (
                   <a
-                    href={`${import.meta.env.BASE_URL}knowledge-base/${article.slug}`}
+                    href={`${import.meta.env.BASE_URL}/knowledge-base/${article.slug}`}
                     class="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow border border-base-300 card-hover"
                   >
                     <div class="card-body">
