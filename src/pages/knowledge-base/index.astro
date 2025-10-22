@@ -52,7 +52,7 @@ const featuredArticles = sortedArticles.filter(article => article.data.featured)
 
   <!-- Featured Articles -->
   {featuredArticles.length > 0 && (
-    <section class="section-padding bg-base-200">
+    <section class="section-padding bg-base-200 overflow-x-hidden">
       <div class="container-custom">
         <h2 class="text-3xl font-bold mb-8">Featured Articles</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -75,7 +75,7 @@ const featuredArticles = sortedArticles.filter(article => article.data.featured)
   )}
 
   <!-- Categories -->
-  <section class="section-padding">
+  <section class="section-padding overflow-x-hidden">
     <div class="container-custom">
       <h2 class="text-3xl font-bold mb-12">Browse by Category</h2>
       <div class="space-y-12">
@@ -93,14 +93,14 @@ const featuredArticles = sortedArticles.filter(article => article.data.featured)
                 {categoryArticles.map((article) => (
                   <a
                     href={`${import.meta.env.BASE_URL}/knowledge-base/${article.slug}`}
-                    class="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow border border-base-300 card-hover"
+                    class="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow border border-base-300 card-hover overflow-hidden"
                   >
                     <div class="card-body">
-                      <h4 class="card-title text-lg">{article.data.title}</h4>
-                      <p class="text-sm text-base-content/70 line-clamp-2">
+                      <h4 class="card-title text-lg break-words">{article.data.title}</h4>
+                      <p class="text-sm text-base-content/70 line-clamp-2 break-words">
                         {article.data.description}
                       </p>
-                      <div class="text-xs text-base-content/60 mt-2">
+                      <div class="text-xs text-base-content/60 mt-2 break-words">
                         {article.data.lastUpdated && `Updated: ${article.data.lastUpdated.toLocaleDateString()}`}
                       </div>
                     </div>

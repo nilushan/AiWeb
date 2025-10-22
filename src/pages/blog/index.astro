@@ -36,7 +36,7 @@ const regularPosts = sortedPosts.filter(post => !post.data.featured);
 
   <!-- Featured Posts -->
   {featuredPosts.length > 0 && (
-    <section class="section-padding bg-base-200">
+    <section class="section-padding bg-base-200 overflow-x-hidden">
       <div class="container-custom">
         <h2 class="text-3xl font-bold mb-8">Featured Posts</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -51,7 +51,7 @@ const regularPosts = sortedPosts.filter(post => !post.data.featured);
             >
               <div class="flex flex-wrap gap-2 mt-4">
                 {post.data.tags?.map((tag) => (
-                  <span class="badge badge-primary">{tag}</span>
+                  <span class="badge badge-primary break-words max-w-full">{tag}</span>
                 ))}
               </div>
               <div class="text-sm text-base-content/60 mt-2">
@@ -70,7 +70,7 @@ const regularPosts = sortedPosts.filter(post => !post.data.featured);
   )}
 
   <!-- All Posts -->
-  <section class="section-padding">
+  <section class="section-padding overflow-x-hidden">
     <div class="container-custom">
       <h2 class="text-3xl font-bold mb-8">All Posts</h2>
       {regularPosts.length > 0 ? (

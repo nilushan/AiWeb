@@ -30,6 +30,7 @@ const {
 const cardClasses = [
   'card',
   'bg-base-100',
+  'overflow-hidden',
   bordered ? 'card-bordered' : 'shadow-xl',
   compact ? 'card-compact' : '',
   side ? 'card-side' : '',
@@ -53,8 +54,8 @@ const Tag = href ? 'a' : 'div';
     </figure>
   )}
   <div class="card-body">
-    {title && <h2 class="card-title">{title}</h2>}
-    {description && <p>{description}</p>}
+    {title && <h2 class="card-title break-words">{title}</h2>}
+    {description && <p class="break-words">{description}</p>}
     <slot />
     <slot name="actions">
       {href && (
