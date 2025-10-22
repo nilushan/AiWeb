@@ -1,24 +1,25 @@
 ---
 const currentYear = new Date().getFullYear();
+const baseUrl = import.meta.env.BASE_URL;
 
 const footerLinks = {
   product: [
-    { name: 'Features', href: '/#features' },
-    { name: 'Pricing', href: '/#pricing' },
-    { name: 'Documentation', href: '/knowledge-base' },
-    { name: 'Blog', href: '/blog' },
+    { name: 'Features', href: `${baseUrl}#features` },
+    { name: 'Pricing', href: `${baseUrl}#pricing` },
+    { name: 'Documentation', href: `${baseUrl}knowledge-base` },
+    { name: 'Blog', href: `${baseUrl}blog` },
   ],
   company: [
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Privacy', href: '/privacy' },
-    { name: 'Terms', href: '/terms' },
+    { name: 'About', href: `${baseUrl}about` },
+    { name: 'Contact', href: `${baseUrl}contact` },
+    { name: 'Privacy', href: `${baseUrl}privacy` },
+    { name: 'Terms', href: `${baseUrl}terms` },
   ],
   resources: [
-    { name: 'Knowledge Base', href: '/knowledge-base' },
-    { name: 'Guides', href: '/knowledge-base?category=guides' },
-    { name: 'Tutorials', href: '/knowledge-base?category=tutorials' },
-    { name: 'FAQ', href: '/knowledge-base?category=faq' },
+    { name: 'Knowledge Base', href: `${baseUrl}knowledge-base` },
+    { name: 'Guides', href: `${baseUrl}knowledge-base?category=guides` },
+    { name: 'Tutorials', href: `${baseUrl}knowledge-base?category=tutorials` },
+    { name: 'FAQ', href: `${baseUrl}knowledge-base?category=faq` },
   ],
 };
 
@@ -34,7 +35,7 @@ const socialLinks = [
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 w-full text-left">
       <!-- Brand -->
       <div>
-        <a href="/" class="text-2xl font-bold gradient-text inline-block mb-4">
+        <a href={baseUrl} class="text-2xl font-bold gradient-text inline-block mb-4">
           AiWeb
         </a>
         <p class="text-base-content/70">

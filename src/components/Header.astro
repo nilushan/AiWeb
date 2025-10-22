@@ -1,14 +1,16 @@
 ---
 import ThemeSwitcher from './ThemeSwitcher';
 
+const baseUrl = import.meta.env.BASE_URL;
+
 const navItems = [
-  { name: 'Home', href: '/' },
-  { name: 'Features', href: '/features' },
-  { name: 'Pricing', href: '/pricing' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Knowledge Base', href: '/knowledge-base' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
+  { name: 'Home', href: `${baseUrl}` },
+  { name: 'Features', href: `${baseUrl}features` },
+  { name: 'Pricing', href: `${baseUrl}pricing` },
+  { name: 'Blog', href: `${baseUrl}blog` },
+  { name: 'Knowledge Base', href: `${baseUrl}knowledge-base` },
+  { name: 'About', href: `${baseUrl}about` },
+  { name: 'Contact', href: `${baseUrl}contact` },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -36,7 +38,7 @@ const currentPath = Astro.url.pathname;
           ))}
         </ul>
       </div>
-      <a href="/" class="btn btn-ghost text-xl font-bold gradient-text">
+      <a href={baseUrl} class="btn btn-ghost text-xl font-bold gradient-text">
         AiWeb
       </a>
     </div>
@@ -58,7 +60,7 @@ const currentPath = Astro.url.pathname;
 
     <div class="navbar-end gap-2">
       <ThemeSwitcher client:load />
-      <a href="/keystatic" class="btn btn-primary btn-sm">
+      <a href={`${baseUrl}keystatic`} class="btn btn-primary btn-sm">
         Admin
       </a>
     </div>
