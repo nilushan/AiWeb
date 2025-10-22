@@ -1,23 +1,21 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Card from '@/components/ui/Card.astro';
-import { createReader } from '@keystatic/core/reader';
-import keystaticConfig from '../../../keystatic.config';
+import { getCollection } from 'astro:content';
 
-const reader = createReader(process.cwd(), keystaticConfig);
-const posts = await reader.collections.posts.all();
+const posts = await getCollection('posts');
 
 // Sort posts by date (newest first) and filter out drafts
 const sortedPosts = posts
-  .filter(post => !post.entry.draft)
+  .filter(post => !post.data.draft)
   .sort((a, b) => {
-    const dateA = new Date(a.entry.publishDate || Date.now());
-    const dateB = new Date(b.entry.publishDate || Date.now());
-    return dateB.getTime() - dateA.getTime();
+    const dateA = a.data.publishDate?.getTime() || Date.now();
+    const dateB = b.data.publishDate?.getTime() || Date.now();
+    return dateB - dateA;
   });
 
-const featuredPosts = sortedPosts.filter(post => post.entry.featured).slice(0, 3);
-const regularPosts = sortedPosts.filter(post => !post.entry.featured);
+const featuredPosts = sortedPosts.filter(post => post.data.featured).slice(0, 3);
+const regularPosts = sortedPosts.filter(post => !post.data.featured);
 ---
 
 <BaseLayout
@@ -44,25 +42,25 @@ const regularPosts = sortedPosts.filter(post => !post.entry.featured);
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredPosts.map((post) => (
             <Card
-              title={post.entry.title}
-              description={post.entry.description}
-              image={post.entry.image || '/images/placeholder.jpg'}
-              imageAlt={post.entry.title}
+              title={post.data.title}
+              description={post.data.description}
+              image={post.data.image || '/images/placeholder.jpg'}
+              imageAlt={post.data.title}
               href={`${import.meta.env.BASE_URL}blog/${post.slug}`}
               hover={true}
             >
               <div class="flex flex-wrap gap-2 mt-4">
-                {post.entry.tags?.map((tag) => (
+                {post.data.tags?.map((tag) => (
                   <span class="badge badge-primary">{tag}</span>
                 ))}
               </div>
               <div class="text-sm text-base-content/60 mt-2">
-                {post.entry.publishDate && new Date(post.entry.publishDate).toLocaleDateString('en-US', {
+                {post.data.publishDate && post.data.publishDate.toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
                 })}
-                {post.entry.author && ` • ${post.entry.author}`}
+                {post.data.author && ` • ${post.data.author}`}
               </div>
             </Card>
           ))}
@@ -79,25 +77,25 @@ const regularPosts = sortedPosts.filter(post => !post.entry.featured);
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {regularPosts.map((post) => (
             <Card
-              title={post.entry.title}
-              description={post.entry.description}
-              image={post.entry.image || '/images/placeholder.jpg'}
-              imageAlt={post.entry.title}
+              title={post.data.title}
+              description={post.data.description}
+              image={post.data.image || '/images/placeholder.jpg'}
+              imageAlt={post.data.title}
               href={`${import.meta.env.BASE_URL}blog/${post.slug}`}
               hover={true}
             >
               <div class="flex flex-wrap gap-2 mt-4">
-                {post.entry.tags?.map((tag) => (
+                {post.data.tags?.map((tag) => (
                   <span class="badge badge-outline">{tag}</span>
                 ))}
               </div>
               <div class="text-sm text-base-content/60 mt-2">
-                {post.entry.publishDate && new Date(post.entry.publishDate).toLocaleDateString('en-US', {
+                {post.data.publishDate && post.data.publishDate.toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
                 })}
-                {post.entry.author && ` • ${post.entry.author}`}
+                {post.data.author && ` • ${post.data.author}`}
               </div>
             </Card>
           ))}
