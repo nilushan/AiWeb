@@ -187,8 +187,12 @@ Create `.vscode/settings.json`:
 Create `.env` file in project root:
 
 ```bash
-PUBLIC_SITE_URL=http://localhost:4321
+# Build-time configuration (optional for local development)
+SITE_URL=http://localhost:4321
+BASE_PATH=/
+
 # Add other environment variables as needed
+PUBLIC_GA_ID=
 ```
 
 ## Project Structure

@@ -429,8 +429,12 @@ Ensure proper file permissions in `src/content/`.
 
 1. **Environment variables**:
 ```bash
-# Check PUBLIC_ prefix for client-side vars
-PUBLIC_SITE_URL=https://example.com
+# Build-time configuration (used in astro.config.mjs)
+SITE_URL=https://example.com
+BASE_PATH=/your-repo
+
+# Client-side public variables (if needed)
+PUBLIC_GA_ID=your-analytics-id
 ```
 
 2. **Absolute imports**:

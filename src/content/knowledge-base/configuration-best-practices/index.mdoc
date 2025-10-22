@@ -317,8 +317,12 @@ import Header from '@/components/Header.astro';
 Create `.env` file:
 
 ```bash
+# Build-time configuration (used in astro.config.mjs)
+SITE_URL=https://yourdomain.com
+BASE_PATH=/your-repo
+
 # Public variables (accessible in client-side code)
-PUBLIC_SITE_URL=https://yourdomain.com
+PUBLIC_GA_ID=your-analytics-id
 PUBLIC_SITE_NAME=AiWeb
 
 # Private variables (server-side only)
@@ -331,8 +335,11 @@ DATABASE_URL=your_database_url
 Access in code:
 
 ```typescript
-// Public variables
-const siteUrl = import.meta.env.PUBLIC_SITE_URL;
+// Build-time base URL (available in all Astro components and pages)
+const baseUrl = import.meta.env.BASE_URL;
+
+// Public variables (client-side accessible)
+const gaId = import.meta.env.PUBLIC_GA_ID;
 
 // Private variables (server-side only)
 const apiKey = import.meta.env.SECRET_API_KEY;
