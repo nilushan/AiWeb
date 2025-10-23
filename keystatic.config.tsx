@@ -129,6 +129,77 @@ export default config({
           label: 'Show in Navigation',
           defaultValue: false,
         }),
+        pageType: fields.select({
+          label: 'Page Type',
+          options: [
+            { label: 'Home', value: 'home' },
+            { label: 'About', value: 'about' },
+            { label: 'Features', value: 'features' },
+            { label: 'Contact', value: 'contact' },
+            { label: 'Pricing', value: 'pricing' },
+            { label: 'Generic', value: 'generic' },
+          ],
+          defaultValue: 'generic',
+        }),
+        hero: fields.object({
+          title: fields.text({ label: 'Hero Title' }),
+          subtitle: fields.text({ label: 'Hero Subtitle', multiline: true }),
+        }),
+        sections: fields.array(
+          fields.object({
+            sectionType: fields.select({
+              label: 'Section Type',
+              options: [
+                { label: 'Features Grid', value: 'features' },
+                { label: 'Team Members', value: 'team' },
+                { label: 'Values', value: 'values' },
+                { label: 'Pricing Plans', value: 'pricing' },
+                { label: 'Contact Methods', value: 'contact-methods' },
+                { label: 'Offices', value: 'offices' },
+                { label: 'Stats', value: 'stats' },
+                { label: 'FAQs', value: 'faqs' },
+                { label: 'CTA', value: 'cta' },
+                { label: 'Tech Stack', value: 'tech-stack' },
+                { label: 'Add-ons', value: 'addons' },
+              ],
+              defaultValue: 'features',
+            }),
+            heading: fields.text({ label: 'Section Heading' }),
+            subheading: fields.text({
+              label: 'Section Subheading',
+              multiline: true,
+            }),
+            items: fields.array(
+              fields.object({
+                title: fields.text({ label: 'Item Title' }),
+                description: fields.text({
+                  label: 'Item Description',
+                  multiline: true,
+                }),
+                icon: fields.text({ label: 'Icon (emoji or class)' }),
+                image: fields.image({
+                  label: 'Item Image',
+                  directory: 'public/images/pages',
+                  publicPath: '/images/pages/',
+                }),
+                link: fields.text({ label: 'Link URL' }),
+                linkText: fields.text({ label: 'Link Text' }),
+                metadata: fields.text({
+                  label: 'Additional Metadata (JSON)',
+                  multiline: true,
+                }),
+              }),
+              {
+                label: 'Section Items',
+                itemLabel: (props) => props.fields.title.value || 'New Item',
+              }
+            ),
+          }),
+          {
+            label: 'Page Sections',
+            itemLabel: (props) => props.fields.heading.value || 'New Section',
+          }
+        ),
         content: fields.markdoc({
           label: 'Content',
           options: {

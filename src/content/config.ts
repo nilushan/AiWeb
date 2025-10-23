@@ -28,7 +28,25 @@ const knowledgeBase = defineCollection({
   }),
 });
 
+const pages = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    image: z.string().optional(),
+    showInNav: z.boolean().default(false),
+    pageType: z.enum(['home', 'about', 'features', 'contact', 'pricing', 'generic']).optional(),
+    hero: z.object({
+      title: z.string(),
+      subtitle: z.string(),
+    }).optional(),
+    // Structured data for different page types
+    sections: z.array(z.any()).optional(),
+  }),
+});
+
 export const collections = {
   posts,
   'knowledge-base': knowledgeBase,
+  pages,
 };
