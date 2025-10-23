@@ -8,7 +8,7 @@ export default config({
     posts: collection({
       label: 'Blog Posts',
       slugField: 'title',
-      path: 'src/content/posts/*',
+      path: 'src/content/posts/*/index',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
@@ -58,7 +58,7 @@ export default config({
     knowledgeBase: collection({
       label: 'Knowledge Base',
       slugField: 'title',
-      path: 'src/content/knowledge-base/*',
+      path: 'src/content/knowledge-base/*/index',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
