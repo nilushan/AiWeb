@@ -1,36 +1,26 @@
 {
-  "name": "aiweb",
-  "type": "module",
+  "name": "aiweb-monorepo",
   "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "AiWeb - Monorepo with Astro static site and Keystatic CMS",
+  "workspaces": [
+    "apps/web",
+    "apps/cms"
+  ],
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "npm run dev --workspace=apps/web",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:cms": "npm run dev --workspace=apps/cms",
+    "build": "npm run build:web && npm run build:cms",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:cms": "npm run build --workspace=apps/cms",
+    "preview:web": "npm run preview --workspace=apps/web",
+    "clean": "rm -rf apps/web/dist apps/web/.astro apps/cms/dist node_modules apps/*/node_modules",
+    "install:all": "npm install"
   },
-  "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/markdoc": "^0.11.4",
-    "@astrojs/node": "^8.3.4",
-    "@astrojs/react": "^3.6.2",
-    "@astrojs/sitemap": "^3.2.1",
-    "@astrojs/tailwind": "^5.1.2",
-    "@keystatic/astro": "^5.0.1",
-    "@keystatic/core": "^0.5.37",
-    "astro": "^4.16.7",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "sharp": "^0.33.5",
-    "tailwindcss": "^3.4.14",
-    "daisyui": "^4.12.14",
-    "typescript": "^5.6.3"
-  },
-  "devDependencies": {
-    "@tailwindcss/typography": "^0.5.15",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1",
-    "prettier": "^3.3.3",
-    "prettier-plugin-astro": "^0.14.1"
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

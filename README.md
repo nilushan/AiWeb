@@ -1,6 +1,6 @@
-# AiWeb - Modern Web Platform
+# AiWeb - Production-Ready Monorepo
 
-A modern, fast, and beautiful web platform built with Astro, DaisyUI, and Keystatic CMS.
+A modern web application built with Astro and Keystatic CMS, structured as a monorepo for production deployment to Firebase Hosting and Google Cloud Run.
 
 ## ✨ Features
 
@@ -47,33 +47,35 @@ npm run dev
 ## 📁 Project Structure
 
 ```
-aiweb/
-├── src/
-│   ├── components/          # Reusable components
-│   │   ├── ui/             # UI components (Button, Card, Hero, etc.)
-│   │   ├── Header.astro    # Site header
-│   │   ├── Footer.astro    # Site footer
-│   │   └── SEO.astro       # SEO component
-│   ├── layouts/            # Page layouts
-│   │   └── BaseLayout.astro
-│   ├── pages/              # Your pages (file-based routing)
-│   │   ├── index.astro     # Homepage
-│   │   ├── blog/           # Blog pages
-│   │   ├── knowledge-base/ # Documentation
-│   │   ├── about.astro     # About page
-│   │   └── keystatic/      # CMS admin
-│   ├── content/            # Content collections
-│   │   ├── posts/          # Blog posts
-│   │   ├── knowledge-base/ # KB articles
-│   │   └── pages/          # Custom pages
-│   └── styles/             # Global styles
-│       └── global.css
-├── public/                 # Static assets
-│   └── images/            # Images
-├── keystatic.config.tsx   # Keystatic CMS configuration
-├── astro.config.mjs       # Astro configuration
-├── tailwind.config.mjs    # Tailwind configuration
-└── package.json
+your-repo/
+├── .github/
+│   └── workflows/
+│       └── deploy-production.yml   # Production deployment workflow
+├── apps/
+│   ├── web/                         # Astro static site
+│   │   ├── src/
+│   │   │   ├── components/         # Reusable components
+│   │   │   ├── content/            # Content collections
+│   │   │   ├── layouts/            # Page layouts
+│   │   │   ├── pages/              # File-based routing
+│   │   │   └── styles/             # Global styles
+│   │   ├── public/                 # Static assets
+│   │   ├── astro.config.mjs        # Astro configuration
+│   │   ├── keystatic.config.tsx    # Keystatic client config
+│   │   ├── tailwind.config.mjs     # Tailwind CSS config
+│   │   ├── package.json            # Web app dependencies
+│   │   └── .env.example            # Environment template
+│   └── cms/                         # Keystatic CMS server
+│       ├── src/
+│       │   ├── index.ts            # Express server
+│       │   └── keystatic.config.ts # Keystatic API config
+│       ├── Dockerfile              # Container configuration
+│       ├── package.json            # CMS dependencies
+│       └── .env.example            # Environment template
+├── package.json                     # Root workspace config
+├── firebase.json                    # Firebase Hosting config
+├── DEPLOYMENT_GUIDE.md              # Deployment instructions
+└── README.md                        # This file
 ```
 
 ## 🎨 Tech Stack
@@ -153,60 +155,70 @@ daisyui: {
 
 ## 🚀 Deployment
 
-### GitHub Pages (Recommended)
+### Production Setup (Firebase + Cloud Run)
 
-This repository includes a GitHub Actions workflow for automatic deployment to GitHub Pages.
+This monorepo is optimized for production deployment with:
+- **Static Site** → Firebase Hosting
+- **CMS Server** → Google Cloud Run
 
-**Quick Setup:**
+**Quick Deploy:**
 
-1. Go to your repository **Settings** > **Pages**
-2. Set **Source** to **GitHub Actions**
-3. Push to `main` branch or merge a PR - deployment happens automatically!
-
-Your site will be live at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME`
-
-**Workflow:**
-- ✅ **All Branches** - Build & validate on every push
-- ✅ **Pull Requests** - Build & validate (no deployment)
-- ✅ **Push to Main** - Build, validate & deploy automatically
-- ✅ **Manual Trigger** - Deploy from any branch
-
-📖 **[Full Deployment Guide](DEPLOYMENT.md)** - Detailed instructions for GitHub Pages and other platforms
-
-### Build for Production
+1. Set up Firebase and Google Cloud projects
+2. Configure GitHub secrets and variables
+3. Push to `main` branch:
 
 ```bash
-npm run build
+git add .
+git commit -m "Deploy to production"
+git push origin main
 ```
 
-The built site will be in the `dist/` directory.
+GitHub Actions will automatically:
+- Build and deploy static site to Firebase Hosting
+- Build and deploy CMS server to Cloud Run
 
-### Other Deployment Options
+📖 **[Full Deployment Guide](DEPLOYMENT_GUIDE.md)** - Comprehensive setup and deployment instructions
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start)
+### Local Development
 
-**Supported Platforms:**
-- **GitHub Pages** ⭐ (Automated with GitHub Actions)
-- Vercel
-- Netlify
-- Cloudflare Pages
-- AWS Amplify
-- DigitalOcean
-- Railway
+```bash
+# Start web development server (includes Keystatic admin)
+npm run dev
+
+# Or run specific workspace
+npm run dev:web
+npm run dev:cms
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview:web
+```
+
+### Available Scripts
+
+```bash
+npm run dev              # Start web development server
+npm run dev:web          # Start web app dev server
+npm run dev:cms          # Start CMS server dev server
+npm run build            # Build all workspaces
+npm run build:web        # Build web app
+npm run build:cms        # Build CMS server
+npm run preview:web      # Preview web production build
+npm run clean            # Clean all build artifacts
+```
 
 ### Content Management
 
-**Development** (with Keystatic CMS):
-```bash
-npm run dev
-# Access CMS at http://localhost:4321/keystatic
-```
+**Development:**
+- Access Keystatic admin at `http://localhost:4321/keystatic`
+- Content stored in GitHub repository
 
-**Production** (GitHub Pages):
-- Content is managed locally via Keystatic
-- Committed to Git
-- Automatically deployed when pushed
+**Production:**
+- CMS API runs on Cloud Run
+- Content managed via GitHub
+- Automatic deployments on content changes
 
 ## 📖 Documentation
 

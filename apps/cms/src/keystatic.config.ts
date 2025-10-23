@@ -1,14 +1,11 @@
 import { config, fields, collection } from '@keystatic/core';
 
 export default config({
-  // storage: {
-  //   kind: 'local',
-  // },
   storage: {
     kind: 'github',
     repo: {
-      owner: 'nilushan',
-      name: 'AiWeb',
+      owner: process.env.GITHUB_REPO_OWNER || 'nilushan',
+      name: process.env.GITHUB_REPO_NAME || 'AiWeb',
     },
   },
   collections: {

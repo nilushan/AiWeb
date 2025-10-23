@@ -6,22 +6,22 @@ import keystatic from '@keystatic/astro';
 import sitemap from '@astrojs/sitemap';
 import node from '@astrojs/node';
 
-// Determine if we're building for production (static) or development (hybrid with Keystatic admin)
-const isProduction = process.env.CI === 'true' || process.env.NODE_ENV === 'production';
+// Determine environment
+const isProduction = process.env.NODE_ENV === 'production';
+const isDevelopment = !isProduction;
 
-// GitHub Pages configuration
-// Update these values based on your repository
-const site = process.env.SITE_URL || 'https://nilushan.github.io';
-const base = process.env.BASE_PATH || '/AiWeb/';
+// Site configuration
+const site = process.env.SITE_URL || 'https://your-site.web.app';
+const base = process.env.BASE_PATH || '/';
 
 // https://astro.build/config
 export default defineConfig({
   site: site,
-  base: isProduction ? base : '/',
+  base: base,
   output: isProduction ? 'static' : 'hybrid',
-  adapter: isProduction ? undefined : node({
+  adapter: isDevelopment ? node({
     mode: 'standalone'
-  }),
+  }) : undefined,
   integrations: [
     react(),
     tailwind({
@@ -29,11 +29,15 @@ export default defineConfig({
     }),
     markdoc(),
     // Only include Keystatic in development (it requires server routes)
-    ...(isProduction ? [] : [keystatic()]),
+    // In production, CMS is handled by separate Cloud Run service
+    ...(isDevelopment ? [keystatic()] : []),
     sitemap(),
   ],
   image: {
-    domains: ['nilushan.github.io', 'github.io'],
+    domains: [
+      'your-site.web.app',
+      'firebasestorage.googleapis.com',
+    ],
     remotePatterns: [{ protocol: 'https' }],
   },
   vite: {
