@@ -5,18 +5,16 @@
   "type": "module",
   "description": "AiWeb - Monorepo with Astro static site and Keystatic CMS",
   "workspaces": [
-    "apps/web",
-    "apps/cms"
+    "apps/web"
   ],
   "scripts": {
     "dev": "npm run dev --workspace=apps/web",
     "dev:web": "npm run dev --workspace=apps/web",
-    "dev:cms": "npm run dev --workspace=apps/cms",
-    "build": "npm run build:web && npm run build:cms",
+    "build": "npm run build --workspace=apps/web",
     "build:web": "npm run build --workspace=apps/web",
-    "build:cms": "npm run build --workspace=apps/cms",
-    "preview:web": "npm run preview --workspace=apps/web",
-    "clean": "rm -rf apps/web/dist apps/web/.astro apps/cms/dist node_modules apps/*/node_modules",
+    "build:cms": "docker build -f apps/cms/Dockerfile -t aiweb-cms .",
+    "preview": "npm run preview --workspace=apps/web",
+    "clean": "rm -rf apps/web/dist apps/web/.astro node_modules apps/*/node_modules",
     "install:all": "npm install"
   },
   "engines": {

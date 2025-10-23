@@ -65,10 +65,9 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build and push Docker image
-        working-directory: apps/cms
         run: |
           IMAGE_NAME="gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.CLOUD_RUN_SERVICE }}"
-          docker build -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
+          docker build -f apps/cms/Dockerfile -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
           docker push $IMAGE_NAME:${{ github.sha }}
           docker push $IMAGE_NAME:latest
 

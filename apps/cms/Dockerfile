@@ -1,56 +1,55 @@
-# Use Node.js LTS version
+# Dockerfile for Keystatic CMS (Astro in hybrid mode)
+# This builds the Astro app from ../web with server-side routes for Keystatic
+
 FROM node:20-alpine AS base
 
-# Install dependencies only when needed
+# Install dependencies
 FROM base AS deps
-WORKDIR /app
+WORKDIR /monorepo
 
-# Copy package files
-COPY package.json package-lock.json* ./
-RUN npm ci
+# Copy workspace configuration
+COPY package.json ./
+COPY apps/web/package.json ./apps/web/
 
-# Build the application
+# Install all dependencies
+RUN npm install
+
+# Build Astro in hybrid mode with Keystatic enabled
 FROM base AS builder
-WORKDIR /app
+WORKDIR /monorepo
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
+# Copy dependencies
+COPY --from=deps /monorepo/node_modules ./node_modules
+COPY --from=deps /monorepo/apps/web/node_modules ./apps/web/node_modules
 
-# Copy source code
-COPY . .
+# Copy web app source
+COPY apps/web ./apps/web
 
-# Build TypeScript
+# Build Astro with Keystatic (development mode to include CMS)
+WORKDIR /monorepo/apps/web
+ENV NODE_ENV=development
 RUN npm run build
 
-# Production image
+# Production runtime
 FROM base AS runner
 WORKDIR /app
 
-# Set environment to production
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
 ENV PORT=8080
 
-# Don't run as root
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 keystatic
+RUN adduser --system --uid 1001 astro
 
-# Copy built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy built Astro application
+COPY --from=builder --chown=astro:nodejs /monorepo/apps/web/dist ./dist
+COPY --from=builder --chown=astro:nodejs /monorepo/apps/web/node_modules ./node_modules
+COPY --from=builder --chown=astro:nodejs /monorepo/apps/web/package.json ./package.json
 
-# Set correct permissions
-RUN chown -R keystatic:nodejs /app
+USER astro
 
-# Switch to non-root user
-USER keystatic
-
-# Expose port
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8080/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Start the server
-CMD ["node", "dist/index.js"]
+# Start Astro server (includes Keystatic routes)
+CMD ["node", "./dist/server/entry.mjs"]
