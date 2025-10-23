@@ -1,131 +1,49 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/ui/Hero.astro';
+import PageSection from '@/components/PageSection.astro';
 
-const team = [
-  {
-    name: 'Alex Johnson',
-    role: 'Founder & CEO',
-    bio: 'Passionate about building great products',
-    avatar: '👨‍💼'
-  },
-  {
-    name: 'Sarah Smith',
-    role: 'Lead Developer',
-    bio: 'Full-stack developer with 10+ years experience',
-    avatar: '👩‍💻'
-  },
-  {
-    name: 'Michael Chen',
-    role: 'Designer',
-    bio: 'Creating beautiful and intuitive interfaces',
-    avatar: '👨‍🎨'
-  }
-];
+// Fetch page content from collection
+const page = await getEntry('pages', 'about');
 
-const values = [
-  {
-    icon: '🎯',
-    title: 'Mission Driven',
-    description: 'We are committed to building products that make a real difference in people\'s lives.'
-  },
-  {
-    icon: '💡',
-    title: 'Innovation First',
-    description: 'We constantly push boundaries and explore new technologies to stay ahead.'
-  },
-  {
-    icon: '🤝',
-    title: 'User Focused',
-    description: 'Every decision we make is guided by what\'s best for our users.'
-  },
-  {
-    icon: '🌍',
-    title: 'Global Impact',
-    description: 'Building solutions that work for everyone, everywhere.'
-  }
-];
+if (!page) {
+  return Astro.redirect('/404');
+}
+
+const { title, description, hero, sections = [] } = page.data;
+const { Content } = await page.render();
 ---
 
 <BaseLayout
-  title="About Us"
-  description="Learn more about our team, mission, and values. We're building the future of web experiences."
+  title={title.charAt(0).toUpperCase() + title.slice(1)}
+  description={description}
 >
   <!-- Hero -->
-  <Hero
-    title="About AiWeb"
-    subtitle="Building the future of web experiences with modern technologies"
-  />
+  {hero && (
+    <Hero
+      title={hero.title}
+      subtitle={hero.subtitle}
+    />
+  )}
 
-  <!-- Mission Section -->
+  <!-- Mission Section (from markdown content) -->
   <section class="section-padding">
     <div class="container-custom">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-4xl font-bold mb-6">Our Mission</h2>
-        <p class="text-xl text-base-content/80 leading-relaxed mb-8">
-          We believe in creating web experiences that are fast, beautiful, and accessible to everyone.
-          Our platform combines the best modern technologies to help developers and creators build
-          amazing websites without compromising on performance or user experience.
-        </p>
-        <p class="text-xl text-base-content/80 leading-relaxed">
-          By leveraging Astro, DaisyUI, and Keystatic CMS, we provide a powerful yet simple solution
-          that scales with your needs while maintaining exceptional performance.
-        </p>
+      <div class="max-w-4xl mx-auto prose prose-lg mx-auto">
+        <Content />
       </div>
     </div>
   </section>
 
-  <!-- Values -->
-  <section class="section-padding bg-base-200">
-    <div class="container-custom">
-      <h2 class="text-4xl font-bold mb-12 text-center">Our Values</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {values.map((value) => (
-          <div class="card bg-base-100 shadow-xl">
-            <div class="card-body items-center text-center">
-              <div class="text-5xl mb-4">{value.icon}</div>
-              <h3 class="card-title text-xl mb-2">{value.title}</h3>
-              <p class="text-base-content/70">{value.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Team -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <h2 class="text-4xl font-bold mb-12 text-center">Meet the Team</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {team.map((member) => (
-          <div class="card bg-base-100 shadow-xl card-hover">
-            <div class="card-body items-center text-center">
-              <div class="text-7xl mb-4">{member.avatar}</div>
-              <h3 class="card-title text-2xl">{member.name}</h3>
-              <p class="text-primary font-semibold">{member.role}</p>
-              <p class="text-base-content/70 mt-2">{member.bio}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section-padding bg-base-200">
-    <div class="container-custom">
-      <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
-        <div class="card-body items-center text-center p-12">
-          <h2 class="card-title text-4xl font-bold mb-4">Join Us on Our Journey</h2>
-          <p class="text-xl mb-6 max-w-2xl opacity-90">
-            We're always looking for talented individuals to join our team and help build the future.
-          </p>
-          <a href="/contact" class="btn btn-accent btn-lg">
-            Get in Touch
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Dynamic Sections -->
+  {sections.map((section, index) => {
+    const isEven = index % 2 === 0;
+    return (
+      <PageSection
+        section={section}
+        className={isEven ? 'bg-base-200' : ''}
+      />
+    );
+  })}
 </BaseLayout>

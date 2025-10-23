@@ -1,325 +1,127 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/ui/Hero.astro';
+import PageSection from '@/components/PageSection.astro';
 
-const plans = [
-  {
-    name: 'Starter',
-    price: 'Free',
-    description: 'Perfect for personal projects and small websites',
-    features: [
-      'Unlimited pages',
-      'All core features',
-      'Community support',
-      'GitHub Pages hosting',
-      'Basic themes',
-      'Content management',
-      '1 GB storage',
-      'Standard performance'
-    ],
-    highlighted: false,
-    cta: 'Get Started',
-    ctaLink: '/knowledge-base'
-  },
-  {
-    name: 'Professional',
-    price: '$29',
-    period: '/month',
-    description: 'For professionals and growing businesses',
-    features: [
-      'Everything in Starter',
-      'Priority support',
-      'Custom domain',
-      'Advanced analytics',
-      'Premium themes',
-      'Custom components',
-      '10 GB storage',
-      'Advanced SEO tools',
-      'Image optimization',
-      'CDN acceleration'
-    ],
-    highlighted: true,
-    cta: 'Start Free Trial',
-    ctaLink: '/contact'
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'For large-scale applications and teams',
-    features: [
-      'Everything in Professional',
-      'Dedicated support',
-      'Custom integrations',
-      'SLA guarantee',
-      'White-label options',
-      'Team collaboration',
-      'Unlimited storage',
-      'Advanced security',
-      'Custom deployment',
-      'Training & onboarding'
-    ],
-    highlighted: false,
-    cta: 'Contact Sales',
-    ctaLink: '/contact'
-  }
-];
+// Fetch page content from collection
+const page = await getEntry('pages', 'pricing');
 
-const faqs = [
-  {
-    question: 'Is AiWeb really free?',
-    answer: 'Yes! The Starter plan is completely free and includes all core features. You can host on GitHub Pages at no cost. Premium plans add advanced features and support for professional use.'
-  },
-  {
-    question: 'Can I upgrade or downgrade my plan?',
-    answer: 'Absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate any charges for the current billing period.'
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for Enterprise customers.'
-  },
-  {
-    question: 'Is there a free trial for paid plans?',
-    answer: 'Yes! Professional plan comes with a 14-day free trial. No credit card required. Cancel anytime during the trial period at no charge.'
-  },
-  {
-    question: 'What is your refund policy?',
-    answer: 'We offer a 30-day money-back guarantee for all paid plans. If you\'re not satisfied, contact us within 30 days for a full refund.'
-  },
-  {
-    question: 'Can I use my own domain?',
-    answer: 'Yes! The Starter plan works with GitHub Pages custom domains. Professional and Enterprise plans include advanced domain management and SSL certificates.'
-  },
-  {
-    question: 'What kind of support do you provide?',
-    answer: 'Starter users get community support via GitHub. Professional users get email support with 24-hour response time. Enterprise customers get dedicated support with SLA guarantees.'
-  },
-  {
-    question: 'Are there any setup fees?',
-    answer: 'No! There are no setup fees, hidden charges, or long-term commitments. Pay only for what you use, and cancel anytime.'
-  }
-];
+if (!page) {
+  return Astro.redirect('/404');
+}
 
-const addons = [
-  {
-    name: 'Additional Storage',
-    price: '$5/month',
-    description: 'Add 10 GB of storage per pack',
-    icon: '💾'
-  },
-  {
-    name: 'Premium Support',
-    price: '$99/month',
-    description: '24/7 priority support with 1-hour response time',
-    icon: '🎯'
-  },
-  {
-    name: 'Custom Theme Design',
-    price: '$499',
-    description: 'One-time fee for custom theme development',
-    icon: '🎨'
-  },
-  {
-    name: 'Performance Audit',
-    price: '$299',
-    description: 'Comprehensive performance analysis and optimization',
-    icon: '⚡'
-  }
-];
+const { title, description, hero, sections = [] } = page.data;
 ---
 
 <BaseLayout
-  title="Pricing"
-  description="Simple, transparent pricing for everyone. Start free and scale as you grow."
+  title={title.charAt(0).toUpperCase() + title.slice(1)}
+  description={description}
 >
   <!-- Hero -->
-  <Hero
-    title="Simple, Transparent Pricing"
-    subtitle="Start free and scale as you grow. No hidden fees, no surprises."
-  />
+  {hero && (
+    <Hero
+      title={hero.title}
+      subtitle={hero.subtitle}
+    />
+  )}
 
-  <!-- Pricing Plans -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {plans.map((plan) => (
-          <div class={`card shadow-xl ${plan.highlighted ? 'bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary scale-105 relative' : 'bg-base-100'}`}>
-            {plan.highlighted && (
-              <div class="badge badge-primary absolute -top-3 left-1/2 -translate-x-1/2">
-                Most Popular
+  <!-- Dynamic Sections -->
+  {sections.map((section, index) => {
+    const className = index % 2 === 1 ? 'bg-base-200' : '';
+
+    // Add comparison table after pricing section
+    if (section.sectionType === 'pricing') {
+      return (
+        <>
+          <PageSection
+            section={section}
+            className={className}
+          />
+
+          <!-- Comparison Table -->
+          <section class="section-padding">
+            <div class="container-custom">
+              <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Feature Comparison</h2>
+                <p class="text-xl text-base-content/70">
+                  Compare plans side-by-side to find the perfect fit
+                </p>
               </div>
-            )}
-            <div class="card-body p-8">
-              <h3 class="card-title text-3xl mb-2">{plan.name}</h3>
-              <div class="mb-4">
-                <span class="text-5xl font-bold">{plan.price}</span>
-                {plan.period && <span class="text-base-content/60">{plan.period}</span>}
+
+              <div class="overflow-x-auto">
+                <table class="table table-zebra w-full max-w-5xl mx-auto">
+                  <thead>
+                    <tr>
+                      <th>Feature</th>
+                      <th class="text-center">Starter</th>
+                      <th class="text-center">Professional</th>
+                      <th class="text-center">Enterprise</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Core Features</td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td>Storage</td>
+                      <td class="text-center">1 GB</td>
+                      <td class="text-center">10 GB</td>
+                      <td class="text-center">Unlimited</td>
+                    </tr>
+                    <tr>
+                      <td>Custom Domain</td>
+                      <td class="text-center">Basic</td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td>Support</td>
+                      <td class="text-center">Community</td>
+                      <td class="text-center">Priority Email</td>
+                      <td class="text-center">Dedicated + SLA</td>
+                    </tr>
+                    <tr>
+                      <td>Analytics</td>
+                      <td class="text-center">Basic</td>
+                      <td class="text-center">Advanced</td>
+                      <td class="text-center">Custom</td>
+                    </tr>
+                    <tr>
+                      <td>Team Members</td>
+                      <td class="text-center">1</td>
+                      <td class="text-center">5</td>
+                      <td class="text-center">Unlimited</td>
+                    </tr>
+                    <tr>
+                      <td>White-label</td>
+                      <td class="text-center">-</td>
+                      <td class="text-center">-</td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td>Custom Integrations</td>
+                      <td class="text-center">-</td>
+                      <td class="text-center">Limited</td>
+                      <td class="text-center"><span class="text-success text-xl">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <p class="text-base-content/70 mb-6">{plan.description}</p>
-
-              <div class="divider"></div>
-
-              <ul class="space-y-3 mb-8">
-                {plan.features.map((feature) => (
-                  <li class="flex items-start gap-2">
-                    <span class="text-success text-lg mt-0.5">✓</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={plan.ctaLink}
-                class={`btn btn-block ${plan.highlighted ? 'btn-primary' : 'btn-outline'}`}
-              >
-                {plan.cta}
-              </a>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+          </section>
+        </>
+      );
+    }
 
-  <!-- Add-ons -->
-  <section class="section-padding bg-base-200">
-    <div class="container-custom">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Optional Add-ons</h2>
-        <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
-          Enhance your plan with additional features and services
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        {addons.map((addon) => (
-          <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
-            <div class="card-body text-center">
-              <div class="text-4xl mb-3">{addon.icon}</div>
-              <h3 class="card-title text-lg justify-center">{addon.name}</h3>
-              <p class="text-2xl font-bold text-primary my-2">{addon.price}</p>
-              <p class="text-sm text-base-content/70">{addon.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Comparison Table -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Feature Comparison</h2>
-        <p class="text-xl text-base-content/70">
-          Compare plans side-by-side to find the perfect fit
-        </p>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="table table-zebra w-full max-w-5xl mx-auto">
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th class="text-center">Starter</th>
-              <th class="text-center">Professional</th>
-              <th class="text-center">Enterprise</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Core Features</td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-            </tr>
-            <tr>
-              <td>Storage</td>
-              <td class="text-center">1 GB</td>
-              <td class="text-center">10 GB</td>
-              <td class="text-center">Unlimited</td>
-            </tr>
-            <tr>
-              <td>Custom Domain</td>
-              <td class="text-center">Basic</td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-            </tr>
-            <tr>
-              <td>Support</td>
-              <td class="text-center">Community</td>
-              <td class="text-center">Priority Email</td>
-              <td class="text-center">Dedicated + SLA</td>
-            </tr>
-            <tr>
-              <td>Analytics</td>
-              <td class="text-center">Basic</td>
-              <td class="text-center">Advanced</td>
-              <td class="text-center">Custom</td>
-            </tr>
-            <tr>
-              <td>Team Members</td>
-              <td class="text-center">1</td>
-              <td class="text-center">5</td>
-              <td class="text-center">Unlimited</td>
-            </tr>
-            <tr>
-              <td>White-label</td>
-              <td class="text-center">-</td>
-              <td class="text-center">-</td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-            </tr>
-            <tr>
-              <td>Custom Integrations</td>
-              <td class="text-center">-</td>
-              <td class="text-center">Limited</td>
-              <td class="text-center"><span class="text-success text-xl">✓</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQs -->
-  <section class="section-padding bg-base-200">
-    <div class="container-custom">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-        <p class="text-xl text-base-content/70">
-          Got questions? We've got answers.
-        </p>
-      </div>
-
-      <div class="max-w-4xl mx-auto space-y-4">
-        {faqs.map((faq, index) => (
-          <div class="collapse collapse-plus bg-base-100 shadow-lg">
-            <input type="radio" name="pricing-faq" checked={index === 0} />
-            <div class="collapse-title text-xl font-medium">
-              {faq.question}
-            </div>
-            <div class="collapse-content">
-              <p class="text-base-content/70">{faq.answer}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
-        <div class="card-body items-center text-center p-12">
-          <h2 class="card-title text-4xl font-bold mb-4">Still Have Questions?</h2>
-          <p class="text-xl mb-6 max-w-2xl opacity-90">
-            Our team is here to help. Get in touch and we'll answer all your questions.
-          </p>
-          <a href="/contact" class="btn btn-accent btn-lg">
-            Contact Sales
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+    return (
+      <PageSection
+        section={section}
+        className={className}
+      />
+    );
+  })}
 </BaseLayout>

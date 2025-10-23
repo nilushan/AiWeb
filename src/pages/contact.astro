@@ -1,239 +1,154 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/ui/Hero.astro';
+import PageSection from '@/components/PageSection.astro';
 
-const contactMethods = [
-  {
-    icon: '📧',
-    title: 'Email',
-    description: 'Send us an email anytime',
-    contact: 'hello@aiweb.dev',
-    link: 'mailto:hello@aiweb.dev'
-  },
-  {
-    icon: '💬',
-    title: 'Live Chat',
-    description: 'Chat with our support team',
-    contact: 'Available 9am-5pm EST',
-    link: '#'
-  },
-  {
-    icon: '📞',
-    title: 'Phone',
-    description: 'Call us during business hours',
-    contact: '+1 (555) 123-4567',
-    link: 'tel:+15551234567'
-  },
-  {
-    icon: '🐙',
-    title: 'GitHub',
-    description: 'Report issues or contribute',
-    contact: 'github.com/aiweb',
-    link: 'https://github.com'
-  }
-];
+// Fetch page content from collection
+const page = await getEntry('pages', 'contact');
 
-const offices = [
-  {
-    city: 'San Francisco',
-    address: '123 Market Street',
-    postal: 'San Francisco, CA 94102',
-    country: 'United States',
-    icon: '🌉'
-  },
-  {
-    city: 'London',
-    address: '456 Oxford Street',
-    postal: 'London W1C 2JQ',
-    country: 'United Kingdom',
-    icon: '🏰'
-  },
-  {
-    city: 'Tokyo',
-    address: '789 Shibuya Crossing',
-    postal: 'Tokyo 150-0002',
-    country: 'Japan',
-    icon: '🗼'
-  }
-];
+if (!page) {
+  return Astro.redirect('/404');
+}
+
+const { title, description, hero, sections = [] } = page.data;
 ---
 
 <BaseLayout
-  title="Contact Us"
-  description="Get in touch with the AiWeb team. We're here to help with questions, support, and partnership opportunities."
+  title={title.charAt(0).toUpperCase() + title.slice(1)}
+  description={description}
 >
   <!-- Hero -->
-  <Hero
-    title="Get in Touch"
-    subtitle="Have questions? We're here to help. Reach out through any of the channels below."
-  />
+  {hero && (
+    <Hero
+      title={hero.title}
+      subtitle={hero.subtitle}
+    />
+  )}
 
-  <!-- Contact Methods -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-        {contactMethods.map((method) => (
-          <a
-            href={method.link}
-            class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-          >
-            <div class="card-body items-center text-center">
-              <div class="text-5xl mb-3">{method.icon}</div>
-              <h3 class="card-title text-xl">{method.title}</h3>
-              <p class="text-sm text-base-content/70 mb-2">{method.description}</p>
-              <p class="text-sm font-semibold text-primary">{method.contact}</p>
-            </div>
-          </a>
-        ))}
-      </div>
+  <!-- Dynamic Sections -->
+  {sections.map((section, index) => {
+    // Special handling for contact form section
+    if (section.sectionType === 'contact-methods') {
+      return (
+        <>
+          <PageSection
+            section={section}
+            className=""
+          />
 
-      <!-- Contact Form -->
-      <div class="max-w-4xl mx-auto">
-        <div class="card bg-base-100 shadow-2xl">
-          <div class="card-body p-8 md:p-12">
-            <h2 class="card-title text-3xl mb-6">Send us a Message</h2>
+          <!-- Contact Form -->
+          <div class="container-custom">
+            <div class="max-w-4xl mx-auto">
+              <div class="card bg-base-100 shadow-2xl">
+                <div class="card-body p-8 md:p-12">
+                  <h2 class="card-title text-3xl mb-6">Send us a Message</h2>
 
-            <form class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-control">
-                  <label class="label">
-                    <span class="label-text font-semibold">First Name</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="John"
-                    class="input input-bordered w-full"
-                    required
-                  />
+                  <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div class="form-control">
+                        <label class="label">
+                          <span class="label-text font-semibold">First Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="John"
+                          class="input input-bordered w-full"
+                          required
+                        />
+                      </div>
+
+                      <div class="form-control">
+                        <label class="label">
+                          <span class="label-text font-semibold">Last Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Doe"
+                          class="input input-bordered w-full"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label">
+                        <span class="label-text font-semibold">Email</span>
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="john.doe@example.com"
+                        class="input input-bordered w-full"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label">
+                        <span class="label-text font-semibold">Company (Optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Acme Inc."
+                        class="input input-bordered w-full"
+                      />
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label">
+                        <span class="label-text font-semibold">Subject</span>
+                      </label>
+                      <select class="select select-bordered w-full">
+                        <option>General Inquiry</option>
+                        <option>Technical Support</option>
+                        <option>Sales Question</option>
+                        <option>Partnership Opportunity</option>
+                        <option>Feature Request</option>
+                        <option>Bug Report</option>
+                      </select>
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label">
+                        <span class="label-text font-semibold">Message</span>
+                      </label>
+                      <textarea
+                        class="textarea textarea-bordered h-32"
+                        placeholder="Tell us how we can help..."
+                        required
+                      ></textarea>
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label cursor-pointer justify-start gap-3">
+                        <input type="checkbox" class="checkbox checkbox-primary" />
+                        <span class="label-text">I agree to receive marketing communications</span>
+                      </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                      Send Message
+                    </button>
+
+                    <p class="text-sm text-center text-base-content/60">
+                      We typically respond within 24 hours
+                    </p>
+                  </form>
                 </div>
-
-                <div class="form-control">
-                  <label class="label">
-                    <span class="label-text font-semibold">Last Name</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Doe"
-                    class="input input-bordered w-full"
-                    required
-                  />
-                </div>
               </div>
-
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text font-semibold">Email</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  class="input input-bordered w-full"
-                  required
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text font-semibold">Company (Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Acme Inc."
-                  class="input input-bordered w-full"
-                />
-              </div>
-
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text font-semibold">Subject</span>
-                </label>
-                <select class="select select-bordered w-full">
-                  <option>General Inquiry</option>
-                  <option>Technical Support</option>
-                  <option>Sales Question</option>
-                  <option>Partnership Opportunity</option>
-                  <option>Feature Request</option>
-                  <option>Bug Report</option>
-                </select>
-              </div>
-
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text font-semibold">Message</span>
-                </label>
-                <textarea
-                  class="textarea textarea-bordered h-32"
-                  placeholder="Tell us how we can help..."
-                  required
-                ></textarea>
-              </div>
-
-              <div class="form-control">
-                <label class="label cursor-pointer justify-start gap-3">
-                  <input type="checkbox" class="checkbox checkbox-primary" />
-                  <span class="label-text">I agree to receive marketing communications</span>
-                </label>
-              </div>
-
-              <button type="submit" class="btn btn-primary btn-lg btn-block">
-                Send Message
-              </button>
-
-              <p class="text-sm text-center text-base-content/60">
-                We typically respond within 24 hours
-              </p>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Office Locations -->
-  <section class="section-padding bg-base-200">
-    <div class="container-custom">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Our Offices</h2>
-        <p class="text-xl text-base-content/70">
-          Visit us at one of our global locations
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {offices.map((office) => (
-          <div class="card bg-base-100 shadow-lg">
-            <div class="card-body text-center">
-              <div class="text-6xl mb-4">{office.icon}</div>
-              <h3 class="card-title text-2xl justify-center mb-2">{office.city}</h3>
-              <p class="text-base-content/70">{office.address}</p>
-              <p class="text-base-content/70">{office.postal}</p>
-              <p class="font-semibold">{office.country}</p>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
+        </>
+      );
+    }
 
-  <!-- FAQ Quick Links -->
-  <section class="section-padding">
-    <div class="container-custom">
-      <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
-        <div class="card-body items-center text-center p-12">
-          <h2 class="card-title text-4xl font-bold mb-4">Looking for Quick Answers?</h2>
-          <p class="text-xl mb-6 max-w-2xl opacity-90">
-            Check out our documentation and knowledge base for instant help with common questions.
-          </p>
-          <div class="flex flex-wrap gap-4 justify-center">
-            <a href="/knowledge-base" class="btn btn-accent btn-lg">
-              Browse Knowledge Base
-            </a>
-            <a href="/pricing" class="btn btn-outline btn-accent btn-lg">
-              View Pricing FAQ
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    // Regular sections
+    const className = index % 2 === 0 ? 'bg-base-200' : '';
+    return (
+      <PageSection
+        section={section}
+        className={className}
+      />
+    );
+  })}
 </BaseLayout>
