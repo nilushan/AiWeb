@@ -1,8 +1,15 @@
 import { config, fields, collection } from '@keystatic/core';
 
 export default config({
+  // storage: {
+  //   kind: 'local',
+  // },
   storage: {
-    kind: 'local',
+    kind: 'github',
+    repo: {
+      owner: 'nilushan',
+      name: 'AiWeb',
+    },
   },
   collections: {
     posts: collection({
@@ -29,13 +36,10 @@ export default config({
           directory: 'public/images/posts',
           publicPath: '/images/posts/',
         }),
-        tags: fields.array(
-          fields.text({ label: 'Tag' }),
-          {
-            label: 'Tags',
-            itemLabel: (props) => props.value,
-          }
-        ),
+        tags: fields.array(fields.text({ label: 'Tag' }), {
+          label: 'Tags',
+          itemLabel: (props) => props.value,
+        }),
         featured: fields.checkbox({
           label: 'Featured Post',
           defaultValue: false,
