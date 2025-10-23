@@ -1,9 +1,10 @@
 ---
 title: Advanced Theme Customization with DaisyUI and Tailwind CSS
-description: Master theme customization in AiWeb. Learn how to create custom themes, implement dynamic theme switching, and build beautiful UIs with DaisyUI.
+description: >-
+  UPDATE Master theme customization in AiWeb. Learn how to create custom themes,
+  implement dynamic theme switching, and build beautiful UIs with DaisyUI.
 publishDate: 2024-10-25
 author: AiWeb Team
-image: /images/posts/theme-customization.jpg
 tags:
   - DaisyUI
   - Tailwind CSS
@@ -12,7 +13,6 @@ tags:
 featured: false
 draft: false
 ---
-
 # Advanced Theme Customization with DaisyUI and Tailwind CSS
 
 One of AiWeb's standout features is its flexible theming system. With 30+ built-in themes and complete customization capabilities, you can create a unique look for your site in minutes. This guide explores everything from basic theme usage to creating completely custom themes from scratch.
@@ -24,8 +24,8 @@ One of AiWeb's standout features is its flexible theming system. With 30+ built-
 Our theming system combines three powerful tools:
 
 1. **Tailwind CSS**: Utility-first CSS framework
-2. **DaisyUI**: Component library with theming
-3. **React**: For dynamic theme switching
+1. **DaisyUI**: Component library with theming
+1. **React**: For dynamic theme switching
 
 ```
 User clicks theme switcher
@@ -65,6 +65,7 @@ When you switch themes, the `data-theme` attribute changes:
 DaisyUI includes 30+ professionally designed themes:
 
 **Light Themes**:
+
 - light (default)
 - cupcake (pink & calm)
 - bumblebee (yellow & warm)
@@ -76,6 +77,7 @@ DaisyUI includes 30+ professionally designed themes:
 - garden (green & natural)
 
 **Dark Themes**:
+
 - dark (default dark)
 - synthwave (purple & neon)
 - halloween (orange & spooky)
@@ -260,15 +262,18 @@ export default {
 DaisyUI uses a semantic color system:
 
 **Brand Colors**:
+
 - `primary`: Main brand color (CTAs, links, important elements)
 - `secondary`: Supporting brand color
 - `accent`: Highlights and special attention
 
 **Neutral Colors**:
+
 - `neutral`: Neutral UI elements (borders, disabled states)
 - `base-100/200/300`: Background shades (100 is lightest)
 
 **Semantic Colors**:
+
 - `info`: Informational messages
 - `success`: Success states and confirmations
 - `warning`: Warnings and cautions
@@ -607,18 +612,18 @@ test('themes meet WCAG AA contrast requirements', () => {
 ### Do's
 
 1. **Test all themes**: Ensure content is readable in every theme
-2. **Use semantic colors**: primary, secondary, accent for consistency
-3. **Provide light and dark**: Users expect both options
-4. **Persist selection**: Save theme choice to localStorage
-5. **Consider accessibility**: Maintain proper contrast ratios
+1. **Use semantic colors**: primary, secondary, accent for consistency
+1. **Provide light and dark**: Users expect both options
+1. **Persist selection**: Save theme choice to localStorage
+1. **Consider accessibility**: Maintain proper contrast ratios
 
 ### Don'ts
 
 1. **Don't hardcode colors**: Use DaisyUI color classes
-2. **Don't ignore flash**: Prevent FOUC with inline script
-3. **Don't overdo transitions**: Keep them subtle
-4. **Don't forget -content colors**: Text must be readable
-5. **Don't include unnecessary themes**: Bloats CSS
+1. **Don't ignore flash**: Prevent FOUC with inline script
+1. **Don't overdo transitions**: Keep them subtle
+1. **Don't forget -content colors**: Text must be readable
+1. **Don't include unnecessary themes**: Bloats CSS
 
 ## Real-World Examples
 
@@ -690,6 +695,7 @@ test('themes meet WCAG AA contrast requirements', () => {
 Theme customization in AiWeb offers endless possibilities. Whether you use built-in themes, create custom ones, or implement dynamic theme switching, the DaisyUI + Tailwind CSS combination provides a powerful and flexible foundation.
 
 Remember:
+
 - Start with built-in themes
 - Customize gradually as needed
 - Test thoroughly across themes
