@@ -51,9 +51,58 @@ npm run build:cms
 docker build -f apps/cms/Dockerfile -t aiweb-cms .
 ```
 
+## Local Docker Testing
+
+To test the CMS Docker container locally:
+
+### 1. Set up environment variables
+
+```bash
+# Copy the example env file
+cp apps/cms/.env.example apps/cms/.env.cms.local
+
+# Edit with your GitHub credentials
+nano apps/cms/.env.cms.local
+```
+
+Required variables:
+- `GITHUB_REPO_OWNER` - Your GitHub username/org
+- `GITHUB_REPO_NAME` - Your repository name
+- `GITHUB_TOKEN` - GitHub Personal Access Token with `repo` scope
+
+### 2. Run the test script
+
+```bash
+# From repository root
+./apps/cms/test-local.sh
+```
+
+Or manually:
+
+```bash
+# Build image
+docker build -f apps/cms/Dockerfile -t aiweb-cms .
+
+# Run with env file
+docker run -p 8080:8080 --env-file apps/cms/.env.cms.local aiweb-cms
+
+# Or pass env vars directly
+docker run -p 8080:8080 \
+  -e GITHUB_REPO_OWNER=nilushan \
+  -e GITHUB_REPO_NAME=AiWeb \
+  -e GITHUB_TOKEN=ghp_your_token \
+  aiweb-cms
+```
+
+Access the CMS at:
+- Site: `http://localhost:8080`
+- Admin: `http://localhost:8080/keystatic`
+
 ## Deployment
 
 The CMS is automatically deployed to Cloud Run via GitHub Actions when you push to `main`.
+
+Environment variables are injected at deployment time by Cloud Run (configured in the GitHub Actions workflow).
 
 See `DEPLOYMENT_GUIDE.md` for full deployment instructions.
 
