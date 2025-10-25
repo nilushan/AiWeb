@@ -43,13 +43,26 @@ npm run dev
 
 ## Building the CMS Docker Image
 
+⚠️ **IMPORTANT:** All Docker commands must be run from the **repository root** (`AiWeb/`), not from `apps/cms/`!
+
 ```bash
-# From repository root
+# Navigate to repository root first
+cd /path/to/AiWeb
+
+# Then build using the npm script
 npm run build:cms
 
-# Or manually:
+# Or manually with docker command
 docker build -f apps/cms/Dockerfile -t aiweb-cms .
+#            ^^^^^^^^^^^^^^^^^^^^^ Dockerfile path
+#                                                ^ Build context is repo root (.)
+
+# ❌ WRONG - Don't run from apps/cms directory:
+# cd apps/cms
+# docker build -t aiweb-cms .  # This will fail!
 ```
+
+**Why?** The Dockerfile needs access to `apps/web/` source code and the root `package.json`, which are outside the `apps/cms/` directory.
 
 ## Local Docker Testing
 
@@ -73,13 +86,19 @@ Required variables:
 ### 2. Run the test script
 
 ```bash
-# From repository root
+# Make sure you're in the repository root
+cd /path/to/AiWeb  # Not apps/cms!
+
+# Run the test script
 ./apps/cms/test-local.sh
 ```
 
 Or manually:
 
 ```bash
+# Make sure you're in the repository root!
+cd /path/to/AiWeb
+
 # Build image
 docker build -f apps/cms/Dockerfile -t aiweb-cms .
 

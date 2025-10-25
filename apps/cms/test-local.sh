@@ -1,10 +1,24 @@
 #!/bin/bash
 
 # Local Docker testing script for CMS
-# Usage: ./apps/cms/test-local.sh
+# Usage: ./apps/cms/test-local.sh (from repository root)
 
 set -e
 
+# Check we're in the repository root
+if [ ! -f "package.json" ] || [ ! -d "apps/cms" ] || [ ! -d "apps/web" ]; then
+    echo "❌ Error: This script must be run from the repository root!"
+    echo ""
+    echo "Current directory: $(pwd)"
+    echo ""
+    echo "Usage:"
+    echo "  cd /path/to/AiWeb"
+    echo "  ./apps/cms/test-local.sh"
+    exit 1
+fi
+
+echo "✓ Running from repository root: $(pwd)"
+echo ""
 echo "🔨 Building CMS Docker image..."
 docker build -f apps/cms/Dockerfile -t aiweb-cms .
 
