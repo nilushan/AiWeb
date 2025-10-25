@@ -3,6 +3,9 @@
 
 FROM node:20-alpine AS base
 
+# Install git and build dependencies (required for npm install)
+RUN apk add --no-cache git
+
 # Install dependencies
 FROM base AS deps
 WORKDIR /monorepo
