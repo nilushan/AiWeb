@@ -1,3 +1,20 @@
+# ⚠️ DEPRECATED - GitHub Pages Setup Guide
+
+**This documentation is outdated.** This project no longer uses GitHub Pages.
+
+## 📖 Current Deployment
+
+The project now uses:
+- **Firebase Hosting** for static site
+- **Google Cloud Run** for CMS server
+
+**See:** [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for current instructions.
+
+---
+
+<details>
+<summary>📚 Old GitHub Pages Setup (For Reference Only)</summary>
+
 # GitHub Pages Setup Guide
 
 ## Important Note About Branch Restrictions
@@ -218,3 +235,5 @@ You can test the deployment right now:
 ---
 
 **Summary:** Due to branch naming restrictions, use the GitHub UI to create a Pull Request from the `claude/*` branch to `main`. Once merged, GitHub Pages will deploy automatically!
+
+</details>

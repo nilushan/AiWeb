@@ -197,12 +197,12 @@ firebase deploy --only hosting
 
 #### Deploy CMS Server
 
-```bash
-# Build and deploy to Cloud Run
-cd apps/cms
+⚠️ **Important:** Docker build commands must be run from the repository root!
 
-# Build Docker image
-docker build -t gcr.io/YOUR_PROJECT_ID/keystatic-cms .
+```bash
+# Build Docker image (from repository root!)
+docker build -f apps/cms/Dockerfile -t gcr.io/YOUR_PROJECT_ID/keystatic-cms .
+#            ^^^ Dockerfile path      Build context = repo root ^
 
 # Push to Container Registry
 docker push gcr.io/YOUR_PROJECT_ID/keystatic-cms
@@ -216,6 +216,8 @@ gcloud run deploy keystatic-cms \
   --set-env-vars "NODE_ENV=production,GITHUB_REPO_OWNER=your-username,GITHUB_REPO_NAME=your-repo" \
   --set-secrets "GITHUB_TOKEN=github-token:latest"
 ```
+
+**What gets deployed:** The CMS deployment builds the Astro app from `apps/web` in hybrid mode (with server-side routes for Keystatic), packages it in a container, and deploys to Cloud Run. It's the same source code as the static site, just built differently to include the admin UI.
 
 ## Environment Configuration
 
@@ -290,8 +292,13 @@ firebase hosting:sites:list
 # Check Cloud Run logs
 gcloud run services logs read keystatic-cms --region=us-central1
 
-# Test Docker image locally
-docker run -p 8080:8080 -e PORT=8080 gcr.io/YOUR_PROJECT_ID/keystatic-cms
+# Test Docker image locally (from repository root)
+docker build -f apps/cms/Dockerfile -t gcr.io/YOUR_PROJECT_ID/keystatic-cms .
+docker run -p 8080:8080 \
+  -e GITHUB_REPO_OWNER=your-username \
+  -e GITHUB_REPO_NAME=your-repo \
+  -e GITHUB_TOKEN=ghp_your_token \
+  gcr.io/YOUR_PROJECT_ID/keystatic-cms
 ```
 
 **CMS can't access GitHub:**

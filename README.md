@@ -65,13 +65,12 @@ your-repo/
 │   │   ├── tailwind.config.mjs     # Tailwind CSS config
 │   │   ├── package.json            # Web app dependencies
 │   │   └── .env.example            # Environment template
-│   └── cms/                         # Keystatic CMS server
-│       ├── src/
-│       │   ├── index.ts            # Express server
-│       │   └── keystatic.config.ts # Keystatic API config
-│       ├── Dockerfile              # Container configuration
-│       ├── package.json            # CMS dependencies
-│       └── .env.example            # Environment template
+│   └── cms/                         # CMS Docker configuration
+│       ├── Dockerfile              # Builds apps/web in hybrid mode
+│       ├── .dockerignore           # Docker ignore rules
+│       ├── .env.example            # Environment template
+│       ├── test-local.sh           # Local Docker testing script
+│       └── README.md               # CMS deployment docs
 ├── package.json                     # Root workspace config
 ├── firebase.json                    # Firebase Hosting config
 ├── DEPLOYMENT_GUIDE.md              # Deployment instructions
@@ -185,29 +184,39 @@ GitHub Actions will automatically:
 # Start web development server (includes Keystatic admin)
 npm run dev
 
-# Or run specific workspace
-npm run dev:web
-npm run dev:cms
-
 # Build for production
 npm run build
 
 # Preview production build
-npm run preview:web
+npm run preview
 ```
+
+**No separate CMS server needed in development!** The Keystatic admin UI is built into the Astro dev server at `/keystatic`.
 
 ### Available Scripts
 
 ```bash
-npm run dev              # Start web development server
-npm run dev:web          # Start web app dev server
-npm run dev:cms          # Start CMS server dev server
-npm run build            # Build all workspaces
-npm run build:web        # Build web app
-npm run build:cms        # Build CMS server
-npm run preview:web      # Preview web production build
+npm run dev              # Start web development server (includes CMS)
+npm run build            # Build static site for production
+npm run build:cms        # Build CMS Docker image (for Cloud Run)
+npm run preview          # Preview production build locally
 npm run clean            # Clean all build artifacts
 ```
+
+### Docker Testing (Optional)
+
+To test the CMS server Docker container locally:
+
+```bash
+# Use the test script (from repository root)
+./apps/cms/test-local.sh
+
+# Or manually
+docker build -f apps/cms/Dockerfile -t aiweb-cms .
+docker run -p 8080:8080 --env-file apps/cms/.env.cms.local aiweb-cms
+```
+
+See `apps/cms/README.md` for detailed Docker testing instructions.
 
 ### Content Management
 

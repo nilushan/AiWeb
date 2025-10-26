@@ -1,3 +1,25 @@
+# ⚠️ DEPRECATED - GitHub Actions Troubleshooting
+
+**This documentation is for the old GitHub Pages deployment and is now outdated.**
+
+## 📖 Current Troubleshooting
+
+For current deployment issues, see:
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Includes troubleshooting section
+- **[LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)** - Local development troubleshooting
+
+## Current Architecture Issues
+
+For Firebase + Cloud Run deployment:
+- **Docker build errors**: See `apps/cms/README.md`
+- **Firebase deployment**: Check Firebase CLI logs
+- **Cloud Run issues**: Check GCP Cloud Run logs with `gcloud run services logs`
+
+---
+
+<details>
+<summary>📚 Old GitHub Pages Troubleshooting (For Reference Only)</summary>
+
 # GitHub Actions Troubleshooting Guide
 
 ## Issue: Deployment Not Happening After PR Merge
@@ -211,3 +233,5 @@ Before reporting an issue, verify:
 ---
 
 **Note**: The workflow includes debug output as of the latest update. Check the "Debug" steps in the workflow logs for detailed information about what's happening.
+
+</details>

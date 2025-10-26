@@ -1,3 +1,34 @@
+# ⚠️ DEPRECATED - GitHub Pages Deployment Guide
+
+**This documentation is outdated.** The project has been refactored for production deployment.
+
+## 📖 Use the New Documentation
+
+This project now deploys to:
+- **Static site** → Firebase Hosting (fast CDN)
+- **CMS server** → Google Cloud Run (hosted admin panel)
+
+**Please refer to:**
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Complete production deployment guide
+- **[LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)** - Local development setup
+- **[README.md](README.md)** - Project overview
+
+---
+
+## Why This Changed
+
+| Old (GitHub Pages) | New (Firebase + Cloud Run) |
+|-------------------|----------------------------|
+| ❌ No server-side routes | ✅ Hosted CMS admin panel |
+| ❌ Local-only content editing | ✅ Web-based content management |
+| ❌ Rebuild for every change | ✅ Separate deployments |
+| ❌ Limited scalability | ✅ Production-ready infrastructure |
+
+---
+
+<details>
+<summary>📚 Old GitHub Pages Instructions (For Reference Only)</summary>
+
 # Deployment Guide
 
 This guide covers deploying your AiWeb site to GitHub Pages.
@@ -204,3 +235,5 @@ For issues specific to:
 ---
 
 Happy deploying! 🚀
+
+</details>
